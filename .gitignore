@@ -55,6 +55,7 @@ cache/
 # Milan Janosov's course notebooks are purchased assets.
 GeoAI_Essentials_Chapters/
 reference/
+docs/UA/
 backend/notebooks/ch*_FINAL.ipynb
 backend/notebooks/Chapter_*_recorded.ipynb
 notebooks/ch*_FINAL.ipynb
