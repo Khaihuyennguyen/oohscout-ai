@@ -1,0 +1,76 @@
+# ── Secrets ─────────────────────────────────────
+.env
+.env.*
+!.env.example
+config.txt
+*.key
+*.pem
+
+# ── Python ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+ENV/
+.python-version
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ── Jupyter ─────────────────────────────────────
+.ipynb_checkpoints/
+Untitled*.ipynb
+
+# ── Node / Frontend (Phase 5+) ──────────────────
+node_modules/
+.next/
+.vercel/
+.turbo/
+dist/
+build/
+
+# ── Data (large + potentially licensed) ─────────
+data/*
+!data/.gitkeep
+backend/data/*
+!backend/data/.gitkeep
+outputs/
+models/
+*.tif
+*.tiff
+*.pbf
+*.osm.pbf
+tmp/
+cache/
+
+# ── Course materials (COPYRIGHT — do not commit) ─
+# Milan Janosov's course notebooks are purchased assets.
+GeoAI_Essentials_Chapters/
+reference/
+backend/notebooks/ch*_FINAL.ipynb
+backend/notebooks/Chapter_*_recorded.ipynb
+notebooks/ch*_FINAL.ipynb
+notebooks/Chapter_*_recorded.ipynb
+
+# ── OS ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── uv ──────────────────────────────────────────
+# NOTE: uv.lock IS committed (reproducibility)

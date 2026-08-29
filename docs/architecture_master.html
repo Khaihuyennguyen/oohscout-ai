@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OOHScout AI — Master System Architecture & Technical Feasibility</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        },
+                        accent: {
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            850: '#172033',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mermaid.js -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+    <!-- KaTeX for Math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .glow-emerald {
+            box-shadow: 0 0 25px -5px rgba(34, 197, 94, 0.25);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.25);
+        }
+        .glow-purple {
+            box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-slate-200 font-sans min-h-screen antialiased">
+
+    <!-- TOP HEADER -->
+    <header class="border-b border-slate-800 bg-dark-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-satellite-dish text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                        OOHScout <span class="text-brand-400 font-extrabold">AI</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">Master Architecture</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Autonomous Billboard Scouting, Spatial Valuation & Land Acquisition</p>
+                </div>
+            </div>
+
+            <!-- NAVIGATION PILLS -->
+            <nav class="hidden md:flex space-x-1 bg-dark-950/60 p-1 rounded-xl border border-slate-800 text-xs">
+                <button onclick="switchTab('arch')" id="tab-btn-arch" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-white bg-brand-600 transition shadow">
+                    <i class="fa-solid fa-diagram-project mr-1.5"></i>System Architecture
+                </button>
+                <button onclick="switchTab('agent')" id="tab-btn-agent" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-brain mr-1.5"></i>AI Agent Core (Ch 14)
+                </button>
+                <button onclick="switchTab('stack')" id="tab-btn-stack" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i>Dual-Engine Stack
+                </button>
+                <button onclick="switchTab('matrix')" id="tab-btn-matrix" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-table-list mr-1.5"></i>12 Features & Proof
+                </button>
+                <button onclick="switchTab('gaps')" id="tab-btn-gaps" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i>Gap Audit
+                </button>
+                <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-road mr-1.5"></i>Build Roadmap
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================================================= -->
+        <!-- TAB 1: MASTER SYSTEM ARCHITECTURE -->
+        <!-- ========================================================================= -->
+        <section id="tab-arch" class="tab-content block space-y-8">
+            <!-- Hero Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 glow-emerald">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Central Brain</span>
+                        <i class="fa-solid fa-robot text-brand-400 text-lg"></i>
+                    </div>
+                    <div class="text-2xl font-black text-white">Chapter 14</div>
+                    <p class="text-xs text-brand-400 font-medium mt-1">Autonomous ReAct Agent (Llama 3.3)</p>
+                </div>
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 glow-cyan">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>GeoAI Deep Learning</span>
+                        <i class="fa-solid fa-satellite text-accent-400 text-lg"></i>
+                    </div>
+                    <div class="text-2xl font-black text-white">14 Chapters</div>
+                    <p class="text-xs text-accent-400 font-medium mt-1">U-Net, YOLO, Siamese, SAM, CLIP</p>
+                </div>
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 glow-purple">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Urban Analytics</span>
+                        <i class="fa-solid fa-city text-purple-400 text-lg"></i>
+                    </div>
+                    <div class="text-2xl font-black text-white">6 Chapters</div>
+                    <p class="text-xs text-purple-400 font-medium mt-1">Pandana, Spatial Lag, DBSCAN, MCDA</p>
+                </div>
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 border-amber-500/20">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Engineering Completeness</span>
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+                    </div>
+                    <div class="text-2xl font-black text-white">85% In-Scope</div>
+                    <p class="text-xs text-amber-400 font-medium mt-1">15% Out-of-Scope (LRS + CAD APIs)</p>
+                </div>
+            </div>
+
+            <!-- Visual Flow Diagram -->
+            <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-network-wired text-brand-400"></i>
+                            End-to-End System Connectivity
+                        </h2>
+                        <p class="text-xs text-slate-400">How raw spatial data feeds into neural networks, spatial econometrics, and the central AI Agent</p>
+                    </div>
+                    <span class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-mono">Mermaid Interactive Canvas</span>
+                </div>
+
+                <div class="mermaid flex justify-center py-4 bg-dark-950/50 rounded-xl border border-slate-800/60 overflow-x-auto">
+flowchart TD
+    subgraph S1["1. MULTI-SOURCE INGESTION LAYER"]
+        D1["<b>TxDOT Live ArcGIS REST</b><br><code>oohscout_real_txdot_data.ipynb</code><br>Commercial Signs & AADT Counts"]
+        D2["<b>OpenStreetMap Overpass</b><br><code>ch04_FINAL.ipynb</code><br>Road Geometry & Commercial POIs"]
+        D3["<b>USGS 3DEP & STAC</b><br><code>ch04_FINAL.ipynb</code><br>0.5m LiDAR nDSM + Sentinel-2 STAC"]
+        D4["<b>County CAD & Zoning (External)</b><br>Tax Parcels & Landowner Contacts"]
+    end
+
+    subgraph S2["2. DEEP LEARNING & ANALYTICAL ENGINES"]
+        direction TB
+        E1["<b>Highway LRS Spacing Engine</b><br>1,000-ft 1D Line Subtraction Gaps"]
+        E2["<b>LiDAR U-Net Obstruction</b><br><code>ch05_FINAL.ipynb</code><br>3D Tree Canopy & Line of Sight"]
+        E3["<b>Pandana Travel Isochrones</b><br><code>Chapter_03_Accessibility.ipynb</code><br>5-Min Exit Drive-Time Surface"]
+        E4["<b>DBSCAN Demand Clustering</b><br><code>Chapter_02_POI_Site_Selection.ipynb</code><br>Advertiser Hotspot Grouping"]
+        E5["<b>Spatial Lag Pricing (pysal)</b><br><code>Chapter_06_Real_Estate.ipynb</code><br>Autoregressive Land Lease Matrix"]
+        E6["<b>Geopath DEC / CPM Engine</b><br><code>ch08_FINAL.ipynb</code><br>Traffic Valuation & Yield Pro-Forma"]
+    end
+
+    subgraph S3["3. 🧠 AUTONOMOUS AGENT ORCHESTRATOR"]
+        AGENT["<b>Chapter 14 ReAct GeoAI Agent</b><br><code>ch14_FINAL.ipynb</code><br><i>Llama 3.3 70B + STRtree Spatial Index + Tool Dispatcher</i>"]
+    end
+
+    subgraph S4["4. ENTERPRISE DELIVERY & APPLICATION"]
+        APP1["<b>Interactive 60fps Vector Map</b><br>Mapbox GL JS + Verified TxDOT Links"]
+        APP2["<b>Automated Landowner Pitch Deck</b><br>PDF Lease Pro-Forma & Offer Letter"]
+        APP3["<b>Operator Market X-Ray</b><br>Lamar/Competitor Monopoly Analytics"]
+    end
+
+    D1 & D2 & D3 & D4 --> E1 & E2 & E3 & E4 & E5 & E6
+    E1 & E2 & E3 & E4 & E5 & E6 <==> AGENT
+    AGENT --> APP1 & APP2 & APP3
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 2: AI AGENT ORCHESTRATION (CHAPTER 14) -->
+        <!-- ========================================================================= -->
+        <section id="tab-agent" class="tab-content hidden space-y-8">
+            <div class="bg-gradient-to-r from-brand-900/30 to-accent-900/30 border border-brand-500/30 rounded-2xl p-6">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl bg-brand-500/20 border border-brand-500/40 flex items-center justify-center text-brand-400 text-2xl">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">The Brain: Chapter 14 Autonomous GeoAI Agent</h2>
+                        <p class="text-sm text-slate-300">How the ReAct loop executes multi-step reasoning across your geospatial tools</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Simulation Console -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-dark-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-brand-400"></i>
+                        Agent Tool Registry (Chapter 14)
+                    </h3>
+                    <p class="text-xs text-slate-400">The LLM invokes these deterministic Python functions to solve user requests:</p>
+                    
+                    <div class="space-y-2">
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800/80">
+                            <span class="text-xs font-mono text-emerald-400 font-semibold">tool_find_legal_gaps()</span>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Calculates 1,000-ft spacing exclusions along highway centerlines.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800/80">
+                            <span class="text-xs font-mono text-accent-400 font-semibold">tool_query_traffic_aadt()</span>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Snaps location to nearest TxDOT AADT station for vehicle counts.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800/80">
+                            <span class="text-xs font-mono text-purple-400 font-semibold">tool_check_lidar_obstruction()</span>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Runs Ch5 U-Net model on LiDAR grid to verify tree sightlines.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800/80">
+                            <span class="text-xs font-mono text-amber-400 font-semibold">tool_get_advertiser_isochrone()</span>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Runs Pandana network engine to cluster retail demand within 5 mins.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800/80">
+                            <span class="text-xs font-mono text-pink-400 font-semibold">tool_predict_lease_and_cpm()</span>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Applies Spatial Lag and Geopath DEC to calculate monthly net yield.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Trace -->
+                <div class="lg:col-span-2 bg-dark-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                            <span class="text-xs font-mono text-slate-400">User Prompt:</span>
+                            <span class="text-xs bg-brand-500/10 text-brand-400 px-2 py-0.5 rounded font-mono">Live ReAct Trace</span>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-lg border border-slate-800 text-sm font-medium text-white mb-4">
+                            "Find me the highest-ROI legal billboard gap on I-35 near Georgetown with over 75,000 daily traffic and high QSR demand."
+                        </div>
+
+                        <!-- Step by step trace -->
+                        <div class="space-y-3 text-xs font-mono">
+                            <div class="p-3 rounded-lg bg-blue-950/30 border border-blue-800/40 text-blue-300">
+                                <b class="text-blue-400">💭 THOUGHT 1:</b> I need to identify the IH-35 centerline in Williamson County and compute 1,000-ft legal spacing exclusions around all active TxDOT billboard permits.
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-emerald-400">
+                                <b>⚡ ACTION 1:</b> <code>tool_find_legal_gaps(highway="IH 35", county="Williamson", buffer_meters=304.8)</code>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-300">
+                                <b>👁️ OBSERVATION 1:</b> Found 4 legal stretches. Top candidate: Segment #1 at Mile Marker 262.4 (Length: 420m).
+                            </div>
+                            <div class="p-3 rounded-lg bg-blue-950/30 border border-blue-800/40 text-blue-300">
+                                <b class="text-blue-400">💭 THOUGHT 2:</b> Now I will evaluate traffic volume (AADT) and nearby commercial advertiser clusters using Pandana network isochrones.
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-emerald-400">
+                                <b>⚡ ACTION 2:</b> <code>tool_evaluate_demand_and_traffic(lat=30.648, lon=-97.682, radius_mins=5.0)</code>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-300">
+                                <b>👁️ OBSERVATION 2:</b> TxDOT AADT = 114,200 vehicles/day. 18 commercial POIs within 5 mins (Buc-ee's, McDonald's, 2 Hotels).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Output Box -->
+                    <div class="mt-6 p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 to-dark-950 border border-emerald-500/40">
+                        <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-check-circle"></i> Synthesized Recommendation
+                        </div>
+                        <p class="text-xs text-slate-200 leading-relaxed">
+                            <b>Candidate Site #1 (MM 262.4, Williamson CAD Parcel #R48291)</b><br>
+                            • <b>Traffic</b>: 114,200 vehicles/day (Top 5% in Central Texas)<br>
+                            • <b>Projected Gross Revenue</b>: <span class="text-brand-400 font-bold">$18,450/month</span> (Digital 6-Slot Rotation)<br>
+                            • <b>Estimated Land Lease</b>: $2,200/month | <b>Net Annual Profit</b>: <span class="text-brand-400 font-bold">$195,000/year</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 3: DUAL-ENGINE TECH STACK -->
+        <!-- ========================================================================= -->
+        <section id="tab-stack" class="tab-content hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Stack A -->
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center space-x-3 pb-4 border-b border-slate-800">
+                        <div class="w-10 h-10 rounded-xl bg-accent-500/20 text-accent-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-satellite"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Engine A: GeoAI Essentials & Deep Learning</h3>
+                            <span class="text-xs font-mono text-accent-400">billboardAI\notebooks\ (14 Chapters)</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 4: Multi-Source STAC & Ingestion</b>
+                            <p class="text-slate-400 mt-1">Downloads LiDAR GeoTIFFs, Sentinel-2 STAC scenes, and TxDOT REST API with pagination.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 5: Semantic Segmentation (U-Net)</b>
+                            <p class="text-slate-400 mt-1">Multi-modal 6-channel U-Net predicting Ground, Building, and Tree Canopy masks at 0.5m/px.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 7: Object Detection (YOLO)</b>
+                            <p class="text-slate-400 mt-1">Detects and counts vehicles in 8cm aerial orthophotos with NMS and IoU evaluation.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 9: Siamese Change Detection</b>
+                            <p class="text-slate-400 mt-1">Compares bi-temporal satellite scenes to detect fresh land clearing and commercial construction.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 13: Geospatial Foundation Models</b>
+                            <p class="text-slate-400 mt-1">Zero-shot promptable instance segmentation with Meta SAM (<code class="text-accent-400">samgeo</code>) and RemoteCLIP.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800 border-brand-500/40">
+                            <b class="text-brand-400">Ch 14: Autonomous GeoAI Agent</b>
+                            <p class="text-slate-300 mt-1">Llama 3.3 ReAct loop + Shapely STRtree spatial indexing orchestrating all tools.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stack B -->
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center space-x-3 pb-4 border-b border-slate-800">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-city"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Engine B: Urban Analytics & Econometrics</h3>
+                            <span class="text-xs font-mono text-purple-400">Downloads\files (1)\files\ (6 Chapters)</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 2: POI Site Selection (DBSCAN + KMeans)</b>
+                            <p class="text-slate-400 mt-1">Finds commercial density agglomerations and categorizes 6 retail typologies.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 3: Urban Accessibility (Pandana)</b>
+                            <p class="text-slate-400 mt-1">High-speed topological network graph generating exact walking/driving travel-time isochrones.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 4: Green Space & Buffer Zonal NDVI</b>
+                            <p class="text-slate-400 mt-1">Derives multi-radius buffer-mean NDVI (10m, 50m, 100m) to quantify roadside vegetation density.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800">
+                            <b class="text-white">Ch 5: Persona-Based MCDA Site Scoring</b>
+                            <p class="text-slate-400 mt-1">MinMax feature normalization and weighted composite index for multi-criteria candidate ranking.</p>
+                        </div>
+                        <div class="p-3 bg-dark-950 rounded-xl border border-slate-800 border-purple-500/40">
+                            <b class="text-purple-400">Ch 6: Spatial Lag Real Estate Pricing (spreg)</b>
+                            <p class="text-slate-300 mt-1">Maximum likelihood spatial autoregression ($\rho W y$) predicting continuous land lease price surfaces.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 4: 12 FEATURES & PROOF MATRIX -->
+        <!-- ========================================================================= -->
+        <section id="tab-matrix" class="tab-content hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white">The 12 Core Features: Complete Technical Audit</h2>
+                    <p class="text-xs text-slate-400">Mapping code proof from both repositories against production requirements</p>
+                </div>
+            </div>
+
+            <!-- Feature Accordion / Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                
+                <!-- Card 1 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">1. Live DOT Billboard Ingestion</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">Queries TxDOT ArcGIS FeatureServer with auto-pagination and GeoJSON caching.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\notebooks\oohscout_real_txdot_data.ipynb</code> (ch4-a1)
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">2. 1D Highway Legal Gap Finder</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Needs LRS Math</span>
+                    </div>
+                    <p class="text-slate-400">Calculates 1,000-ft spacing exclusions along highway centerlines to isolate legal buildable stretches.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\ch02_FINAL.ipynb</code> + Shapely 1D LineOps
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">3. Competitor Monopoly X-Ray</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">Corridor-level market share roll-up and static vs. digital penetration analytics.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\notebooks\oohscout_real_txdot_data.ipynb</code> (ch4-a3)
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">4. Pandana Travel-Time Isochrones</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">Computes true road network travel minutes from exits to commercial businesses.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>Downloads\files\Chapter_03_Accessibility.ipynb</code> (Sec 3.3)
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">5. Commercial Demand Clustering</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">DBSCAN + Spatial TF-IDF categorizing high-paying advertiser hubs (QSR, Fuel, Hotels).</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>Downloads\files\Chapter_02_POI_Site_Selection.ipynb</code>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">6. 3D LiDAR Tree Obstruction Scorer</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Needs 3D Raycaster</span>
+                    </div>
+                    <p class="text-slate-400">U-Net segmentation on 0.5m LiDAR height grid to detect sightline-blocking canopies.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\ch05_FINAL.ipynb</code> (Steps 36–41)
+                    </div>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">7. Aerial Vehicle Counter (YOLO)</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">Detects vehicles in high-res orthophotos to verify parking occupancy and retail vibrancy.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\ch07_FINAL.ipynb</code> (Steps 47–52)
+                    </div>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">8. Spatial Lag Land Lease Valuation</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">Estimates monthly land lease cost using maximum likelihood spatial autoregression ($\rho W y$).</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>Downloads\files\Chapter_06_Real_Estate_Pricing.ipynb</code>
+                    </div>
+                </div>
+
+                <!-- Card 9 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">9. AADT Traffic to CPM Revenue</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Needs Geopath DEC</span>
+                    </div>
+                    <p class="text-slate-400">Calculates Daily Effective Circulation and digital rotation multiplier yields.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\oohscout_real_txdot_data.ipynb</code> (Sec D.1)
+                    </div>
+                </div>
+
+                <!-- Card 10 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">10. Multi-Criteria Persona Ranking</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">MinMax normalized composite index tailored to operator investment personas.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>Downloads\files\Chapter_05_Walkability_Livability.ipynb</code>
+                    </div>
+                </div>
+
+                <!-- Card 11 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">11. Ground-Clearing Satellite Radar</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% In-Scope</span>
+                    </div>
+                    <p class="text-slate-400">Bi-temporal Siamese U-Net + SAM foundation model detecting new highway developments.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>billboardAI\ch09_FINAL.ipynb</code> & <code>ch13_FINAL.ipynb</code>
+                    </div>
+                </div>
+
+                <!-- Card 12 -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm">12. County CAD Landowner Pipeline</span>
+                        <span class="px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">Needs CAD API</span>
+                    </div>
+                    <p class="text-slate-400">Attaches tax appraisal parcel boundaries, zoning eligibility, and owner mailing addresses.</p>
+                    <div class="p-2 bg-dark-950 rounded font-mono text-[11px] text-slate-300">
+                        📁 <code>Downloads\files\Chapter_01_Setting_Up.ipynb</code> + Regrid API
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 5: GAP AUDIT & OUT-OF-SCOPE SOLUTIONS -->
+        <!-- ========================================================================= -->
+        <section id="tab-gaps" class="tab-content hidden space-y-6">
+            <div class="p-5 bg-amber-950/20 border border-amber-500/30 rounded-2xl">
+                <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Intellectual Honesty Audit: The 5 Things You Must Build Outside the Books
+                </h3>
+                <p class="text-xs text-slate-300 mt-1">The textbooks give you 85% of the machine learning and spatial math. These are the 5 external engineering layers required for a commercial launch:</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                    <b class="text-white text-sm">1. Highway 1D Linear Referencing (LRS)</b>
+                    <p class="text-slate-400">The books focus on 2D planar buffers. Billboards require snapping to a 1D highway line and subtracting exclusion intervals along the road curve.</p>
+                    <div class="p-3 bg-dark-950 rounded text-emerald-400 font-mono text-[11px]">
+                        <b>Solution:</b> Use Shapely <code>line.project(point)</code> to obtain 1D mileages, subtract 1,000-ft intervals, and reconstruct 1D candidate line segments.
+                    </div>
+                </div>
+
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                    <b class="text-white text-sm">2. 3D Viewshed Raycasting Algorithm</b>
+                    <p class="text-slate-400">Chapter 5 gives a 2D pixel mask of tree heights, but not the 3D ray from the driver's eye (1.5m) to the billboard face (20m).</p>
+                    <div class="p-3 bg-dark-950 rounded text-emerald-400 font-mono text-[11px]">
+                        <b>Solution:</b> Implement parametric 3D line-of-sight raycasting testing $R(t)$ against the LiDAR elevation grid to compute clear viewing seconds at 65 mph.
+                    </div>
+                </div>
+
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                    <b class="text-white text-sm">3. Private Landowner & Tax Parcel CAD Data</b>
+                    <p class="text-slate-400">OpenStreetMap deliberately strips out private property owner names and mailing addresses for privacy reasons.</p>
+                    <div class="p-3 bg-dark-950 rounded text-emerald-400 font-mono text-[11px]">
+                        <b>Solution:</b> Ingest County Central Appraisal District (CAD) open GIS datasets or integrate the Regrid / Landgrid Nationwide Parcel API.
+                    </div>
+                </div>
+
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                    <b class="text-white text-sm">4. Geopath Industry DEC & CPM Financial Formulas</b>
+                    <p class="text-slate-400">The books teach academic regression, not Out-of-Home media buying economics.</p>
+                    <div class="p-3 bg-dark-950 rounded text-emerald-400 font-mono text-[11px]">
+                        <b>Solution:</b> Encode standard Geopath formulas: $\text{DEC} = \text{AADT} \times 1.4 \times \Phi_{\text{vis}}$, multiplying by digital 6-to-8 slot rotations.
+                    </div>
+                </div>
+
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-2 md:col-span-2">
+                    <b class="text-white text-sm">5. Full-Stack SaaS Web Architecture</b>
+                    <p class="text-slate-400">The notebooks output static HTML Folium files for Jupyter viewing.</p>
+                    <div class="p-3 bg-dark-950 rounded text-emerald-400 font-mono text-[11px]">
+                        <b>Solution:</b> Build a production <b>FastAPI</b> backend connected to a <b>PostgreSQL / PostGIS</b> database, served to a <b>React / Next.js</b> frontend with <b>Mapbox GL JS</b> vector tiles for 60fps rendering of 100,000+ parcels.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 6: ROADMAP -->
+        <!-- ========================================================================= -->
+        <section id="tab-roadmap" class="tab-content hidden space-y-6">
+            <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-timeline text-brand-400"></i>
+                    5-Week Phased Implementation Roadmap
+                </h2>
+
+                <div class="space-y-4">
+                    <div class="border-l-2 border-brand-500 pl-4 py-1">
+                        <span class="text-xs font-mono text-brand-400 font-semibold">WEEK 1 • MILESTONE 1</span>
+                        <h3 class="text-sm font-bold text-white">Highway 1D LRS Gap Finder & Parcel Overlay</h3>
+                        <p class="text-xs text-slate-400 mt-1">Implement Shapely linear referencing to find 1,000-ft legal gaps on I-35 and join with Williamson/McLennan CAD parcels.</p>
+                    </div>
+                    <div class="border-l-2 border-accent-500 pl-4 py-1">
+                        <span class="text-xs font-mono text-accent-400 font-semibold">WEEK 2 • MILESTONE 2</span>
+                        <h3 class="text-sm font-bold text-white">Pandana Network Isochrones & POI Demand</h3>
+                        <p class="text-xs text-slate-400 mt-1">Build Pandana street network engine to calculate 5-minute exit drive times and cluster advertiser demand.</p>
+                    </div>
+                    <div class="border-l-2 border-purple-500 pl-4 py-1">
+                        <span class="text-xs font-mono text-purple-400 font-semibold">WEEK 3 • MILESTONE 3</span>
+                        <h3 class="text-sm font-bold text-white">LiDAR Sightline Scorer & Spatial Lag Lease Pricing</h3>
+                        <p class="text-xs text-slate-400 mt-1">Deploy U-Net LiDAR model for tree sightlines and fit Spatial Lag regression for roadside land lease estimation.</p>
+                    </div>
+                    <div class="border-l-2 border-amber-500 pl-4 py-1">
+                        <span class="text-xs font-mono text-amber-400 font-semibold">WEEK 4 • MILESTONE 4</span>
+                        <h3 class="text-sm font-bold text-white">🧠 Autonomous GeoAI Agent (Chapter 14)</h3>
+                        <p class="text-xs text-slate-400 mt-1">Package previous models into discrete Python tools and connect to Llama 3.3 ReAct loop via Groq API.</p>
+                    </div>
+                    <div class="border-l-2 border-emerald-500 pl-4 py-1">
+                        <span class="text-xs font-mono text-emerald-400 font-semibold">WEEK 5 • MILESTONE 5</span>
+                        <h3 class="text-sm font-bold text-white">Production Web SaaS & PDF Deal Deck Exporter</h3>
+                        <p class="text-xs text-slate-400 mt-1">Launch FastAPI backend + Mapbox GL JS frontend with 1-click PDF landowner proposal generation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TAB SWITCHING SCRIPT -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
+            
+            // Show selected tab
+            const activeTab = document.getElementById('tab-' + tabId);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+                activeTab.classList.add('block');
+            }
+
+            // Update nav button styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-600', 'text-white', 'shadow');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow');
+            }
+        }
+
+        // Initialize Mermaid
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'dark',
+                themeVariables: {
+                    darkMode: true,
+                    background: '#0f172a',
+                    primaryColor: '#16a34a',
+                    primaryTextColor: '#f8fafc',
+                    primaryBorderColor: '#22c55e',
+                    lineColor: '#38bdf8',
+                    secondaryColor: '#1e293b',
+                    tertiaryColor: '#020617'
+                }
+            });
+
+            // Initialize KaTeX
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
