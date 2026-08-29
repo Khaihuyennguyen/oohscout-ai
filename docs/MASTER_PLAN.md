@@ -15,9 +15,11 @@
 ### Honest count (as of 2026-08-29)
 
 **Total features in scope:** 52
-**Actually shipped (working on real Waco data):** 3
-**Techniques learned but not applied to Waco:** 4
-**Not started:** 45
+**Actually shipped (working on real Waco data):** 2 (F3, F42)
+**In progress:** 1 (F1)
+**Partial/prototype only:** 3 (F6, F7, F43)
+**Technique learned but not applied to Waco:** 2 (F21, F23)
+**Not started:** 44
 
 ### Feature-by-feature status
 
@@ -29,14 +31,15 @@
 | 21 | NDVI vegetation buffer (technique from Ch 4) | 🎓 **Technique learned, not applied** | Ch 4 done; not integrated into Waco pipeline |
 | — | GeoAI Ch 4 & 5 course techniques | 🎓 **Learned** | Explanation files in `notebooks/` |
 | 43 | GeoPackage exports | ⚠️ **Partial** | Currently using GeoJSON with projected coords (RFC-noncompliant) |
-| 1, 2, 5 | Retargetable study area, base geometry, test bbox | ❌ **Not started (proper form)** | Existing notebooks have scattered constants; not Ch 1-disciplined |
+| 1 | Retargetable study area | 🚧 **In progress** | `docs/learning/chapters/ua_advanced_ch01_setup/03_oohscout_adaptation.ipynb` on `feature/f1-retargetable-study-area` |
+| 2, 5 | Base geometry, test bbox | ❌ **Not started (proper form)** | Begin only after F1 assertions and visual check pass |
 | 4 | Provenance metadata | ❌ **Not started** | No `source.yaml` sidecars yet |
 | 6, 7 | Corridor buffer, candidate sampling | ⚠️ **Prototype only** | In `oohscout_texas_corridor.ipynb` but techniques come from unstudied chapters |
 | 8, 9 | LRS spacing engine, 43 TAC rule table | ❌ **Not started** | Blocked on rule research |
 | 10–18 | UA Ch 2 + Ch 3 features | ❌ **Not started** | Need to study chapters |
 | 19–30 | UA Ch 4 + 5 + 6 features | ❌ **Not started** | Need to study chapters |
 | 31–36 | Track B (RAG) | ❌ **Not started** | Locked in its own box until Track A ships |
-| 37–41 | Track C (Agent) | ❌ **Not started** | Locked until Track A + B ship |
+| 37–41 | Track C (Agent) | ❌ **Not started** | Full integration locked until Track A + B ship; experimental Track-A-only Scout shell allowed after F7 |
 | 44–52 | Delivery + optional exhibits | ❌ **Not started** | Phase 5+ |
 
 ### The next feature you should do
@@ -49,13 +52,13 @@
 - Ships in one session (~3 hours)
 - Unlocks Features 2, 5, 43 in the same session
 
-**But before you do it:** Milan's explicit advice is to do the **Urban Analytics Intro** first (~2 weeks of short lessons). Skipping Intro to jump into Advanced Ch 1 means "backfilling as needed" — which he warned you against. Buy the Intro, do it, then do Feature 1.
+**Current decision:** Start Feature 1 now because the Urban Analytics Intro purchase is unresolved. Backfill only the specific GeoPandas/OSMnx concept that blocks the current cell; do not treat this as permission to skip broad fundamentals or use techniques from later chapters.
 
-**Your decision:**
-- Path A (Milan-recommended): Buy Intro → 2 weeks → then Feature 1
-- Path B (aggressive): Skip Intro → do Feature 1 today → patch gaps as they appear
+**Current branch:** `feature/f1-retargetable-study-area`
 
-I'd recommend Path A. Milan built the course; he knows what Advanced assumes.
+**Completion gate:** Run the F1 adaptation cell by cell, pass its geometry/CRS/area assertions, and visually verify McLennan County on Esri World Imagery. Only then mark F1 shipped and begin F2.
+
+**Early-agent decision:** After F7, build an experimental read-only Scout shell around Track A for motivation and Chapter 14 practice. It returns existing-market facts and unverified scouting points only. It does not recommend sites, call Track B, or complete F37/F39. Full Track A + Track B integration remains Phase 4.
 
 ---
 
@@ -357,21 +360,15 @@ billboardAI/
 
 ## SECTION 4 — Immediate Next Step
 
-**Recommended path (following Milan's advice):**
+**Step 1:** Retype Milan's Chapter 1 setup and study-area cells in `01_milan_original.ipynb`.
 
-**Step 0.1:** Buy the Urban Analytics Intro course (`thenewscienceofmaps.com/courses/urban-intro`) — today, ~$50-100.
+**Step 2:** Read `02_milan_explanation.md` beside the notebook and resolve any unfamiliar GeoPandas/OSMnx concepts before continuing.
 
-**Step 0.2:** Send MCAD parcel request email + City of Waco zoning request email — today, non-blocking.
+**Step 3:** Run `03_oohscout_adaptation.ipynb` from the repository root. Stop on any failed assertion or implausible output.
 
-**Step 0.3:** Work through Urban Analytics Intro (2 weeks, ~10 hrs/week).
+**Step 4:** Visually confirm the red boundary surrounds McLennan County and record the measured area.
 
-**Step 0.4:** Return to this document. Execute Feature 1 via UA Advanced Ch 1.
-
-**Alternative path (aggressive, against Milan's advice):**
-
-**Step 1.1 today:** Open UA Advanced Ch 1, execute the first exercise (retarget to McLennan County). Ship Feature 1 in one session. Deal with fluency gaps as they appear.
-
-The recommended path takes ~3 weeks total before Feature 1 ships. The aggressive path ships Feature 1 today but at the cost of ~2 months of debugging later, per Milan's warning.
+**Step 5:** Mark F1 complete in PRD/FEATURES/MASTER_PLAN, then begin F2. Do not start the Scout shell until F7 is complete.
 
 ---
 

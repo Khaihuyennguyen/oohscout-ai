@@ -125,7 +125,9 @@ All chapter data files confirmed present in `notebooks/data/new_study/`:
     - Vision agent analyzes PIL-drawn cartoons, not satellite imagery
     - Spatial engine math is genuinely good; port that logic (not the data)
 
-**Currently on:** Real TxDOT data integrated. Waiting on MCAD parcel + Waco zoning data requests before Phase 2.
+**Currently on:** Feature 1 — Retargetable Study Area, started on branch `feature/f1-retargetable-study-area`. McLennan parcel and Waco zoning requests are later data dependencies; they do not block F1.
+
+**Agent sequencing decision (2026-08-29):** After F7, an experimental Track-A-only Scout shell may expose existing signs, POIs, AADT, and unverified scouting points. It must label all points `REVIEW`, must not integrate Track B, and does not count as F37/F39 completion. The full ReAct agent still integrates Track A + Track B only in Phase 4.
 
 **Data priority for OOHScout (focus on these):**
 - RIGHT NOW: osm_pois_manhattan.geojson, osm_landuse_hungary.geojson (technique = advertiser demand + zoning)
