@@ -143,11 +143,31 @@ Priority scale:
 **F1. Retargetable Study Area**
 - **Chapter:** UA Advanced Ch 1
 - **Priority:** P0
-- **Status:** IN PROGRESS on `feature/f1-retargetable-study-area`
+- **Status:** ✅ SHIPPED 2026-08-29 on `feature/f1-retargetable-study-area`
 - **Input:** `PLACE = "McLennan County, Texas"`, `CRS_METRIC = 32614`, `CRS_GEOGRAPHIC = 4326`
 - **Output:** `admin_gdf` (GeoDataFrame with 1 polygon), `study_area` polygon in metric CRS
 - **Dependencies:** None (foundational)
 - **Acceptance:** Editing the study-area configuration block (`PLACE`, matching `CRS_METRIC`, and the county's published reference area) retargets the study area to another county. Boundary plots on Esri satellite basemap. Reported total administrative area (in km²) matches a published Census/Wikipedia reference within 5%.
+- **Result:** All 5 gate items green — 1 polygon record, projected to EPSG:32614, measured area **2,747.3 km²** (0.05% off Census reference 2,746.0 km²), boundary visually verified on Esri World Imagery to surround McLennan County / Waco, GeoPackage cached to `backend/data/processed/mclennan_county_study_area.gpkg`.
+- **Artifacts:** Notebook `docs/learning/chapters/ua_advanced_ch01_setup/03_oohscout_adaptation.ipynb`; production module `backend/src/oohscout/track_a_spatial/study_area.py`; visual check `backend/data/processed/mclennan_f1_check.png`.
+- **Known gap:** The production module was written but is not yet importable — `pyproject.toml` sets `[tool.uv] package = false`, so no code outside a notebook can `from oohscout.track_a_spatial import …`. This gap is tracked as **F1a**.
+
+---
+
+**F1a. Make `backend/src/oohscout/` an installable package**
+- **Chapter:** Project infrastructure (external — no course covers this)
+- **Priority:** P0 (blocks every future production module from being importable)
+- **Status:** ⏳ Queued — next branch `feature/f1a-installable-package`
+- **Input:** Existing `pyproject.toml`, `backend/src/oohscout/` layout, F1's production module.
+- **Output:** `oohscout` is a real installed package; `uv sync` makes `import oohscout.track_a_spatial` work from any Python entry point (FastAPI, agent tool, pytest, ad-hoc script).
+- **Dependencies:** F1 (module needs to exist to import).
+- **Acceptance:**
+  1. `[tool.uv] package = true` (or removed) with a valid `[build-system]` and package-discovery config pointing at `backend/src/oohscout/`.
+  2. `uv sync` completes without error.
+  3. `uv run python -c "from oohscout.track_a_spatial import load_or_build_study_area, assert_contains_point; print('ok')"` prints `ok`.
+  4. `backend/tests/track_a/test_study_area.py` exists and passes under `uv run pytest backend/tests/track_a/test_study_area.py` — one test that calls `load_or_build_study_area("McLennan County, Texas", 32614, ...)` with `reference_total_area_km2=2746.0` and asserts no exception; one test that calls `assert_contains_point(study, -97.1467, 31.5493)` and asserts no exception.
+  5. The F1 code-along notebook cell 7 ("Import from the production module") runs successfully.
+- **Rationale:** The user's expanded goal is a working production site, not notebook-only. Splitting the packaging into its own tightly-scoped feature keeps F1's PRD scope honest, makes F1a's success/failure easy to see, and unblocks every future feature (F2+) from having a real importable module rather than an orphan `.py` file.
 
 ---
 

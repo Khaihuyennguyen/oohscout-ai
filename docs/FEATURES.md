@@ -22,7 +22,8 @@
 
 | # | Feature | Primary Chapter | Status | Notes |
 |---|---|---|---|---|
-| 1 | Retargetable study area with one `PLACE` + `CRS_METRIC` block | UA Advanced Ch 1 | 🚧 | In progress on `feature/f1-retargetable-study-area` |
+| 1 | Retargetable study area with one `PLACE` + `CRS_METRIC` block | UA Advanced Ch 1 | ✅ | Shipped 2026-08-29 on `feature/f1-retargetable-study-area`. Area 2,747.3 km² (0.05% off Census reference); boundary visually verified on Esri; cached to `backend/data/processed/mclennan_county_study_area.gpkg`. Production module written at `backend/src/oohscout/track_a_spatial/study_area.py` (not yet installable — see F1a). |
+| 1a | Make `backend/src/oohscout/` an installable package + smoke test | Project infra (external) | ⏳ | Follow-up to F1. Flip `[tool.uv] package = false` → `true`, add build-system/hatch config, `uv sync`, prove `from oohscout.track_a_spatial import load_or_build_study_area` works, add one pytest under `backend/tests/track_a/`. Unlocks every future production module (F2+) being importable from FastAPI, agent tools, and tests. |
 | 2 | Base geometry = IH-35 highway centerline with unique key | UA Advanced Ch 1 | ⏳ | Buildings → highway; polygonal filter → LineString filter |
 | 3 | Multi-source ingestion + cache pattern | UA Adv Ch 1 + your existing notebook | ✅ | TxDOT REST, OSM, later MCAD |
 | 4 | Data provenance metadata (license, source, freshness) | `CLAUDE.md` rule + UA Ch 4 discipline | ⏳ | Every dataset carries `source.yaml` sidecar |
