@@ -81,7 +81,7 @@ docs/learning/
     ├── geoai_ch05_segmentation/     ✅ Done (Ch 5)
     │   └── 02_milan_explanation.md  ← ch05_explanation.md
     │
-    ├── ua_advanced_ch01_setup/      ⏳ Next chapter — READY TO START
+    ├── ua_advanced_ch01_setup/      🚧 Started — F1 in progress
     │   ├── 01_milan_original.ipynb          (you type this)
     │   ├── 02_milan_explanation.md          (I write this in parallel)
     │   ├── 03_oohscout_adaptation.ipynb     (you build with my guidance)
@@ -92,7 +92,7 @@ docs/learning/
     ├── ua_advanced_ch04_landuse/           (queued)
     ├── ua_advanced_ch05_livability/        (queued)
     ├── ua_advanced_ch06_pricing/           (queued)
-    └── geoai_ch14_agent/                   (Phase 4)
+    └── geoai_ch14_agent/                   (preview allowed after F7; full adaptation Phase 4)
 ```
 
 ---
@@ -147,3 +147,7 @@ docs/learning/
 - Do not skip File 4 (adaptation explanation) — future you will need it
 - Do not build features not in the PRD — if a chapter suggests a feature, add it to PRD first
 - Do not commit until all 4 files exist and pass a quick review
+
+## Early agent learning boundary
+
+After F7, a small Chapter 14 learning exercise may wrap **read-only Track A tools** in an experimental Scout shell. This is an interface checkpoint, not a new PRD feature and not completion of F37. It cannot combine Track A with Track B, perform geometry in the LLM, or recommend where to build. The full `03_oohscout_adaptation.ipynb` for Chapter 14 remains a Phase 4 activity.

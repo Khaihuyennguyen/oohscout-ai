@@ -22,7 +22,7 @@
 
 | # | Feature | Primary Chapter | Status | Notes |
 |---|---|---|---|---|
-| 1 | Retargetable study area with one `PLACE` + `CRS_METRIC` block | UA Advanced Ch 1 | ⏳ | `PLACE = "McLennan County, Texas"`, `CRS_METRIC = 32614` |
+| 1 | Retargetable study area with one `PLACE` + `CRS_METRIC` block | UA Advanced Ch 1 | 🚧 | In progress on `feature/f1-retargetable-study-area` |
 | 2 | Base geometry = IH-35 highway centerline with unique key | UA Advanced Ch 1 | ⏳ | Buildings → highway; polygonal filter → LineString filter |
 | 3 | Multi-source ingestion + cache pattern | UA Adv Ch 1 + your existing notebook | ✅ | TxDOT REST, OSM, later MCAD |
 | 4 | Data provenance metadata (license, source, freshness) | `CLAUDE.md` rule + UA Ch 4 discipline | ⏳ | Every dataset carries `source.yaml` sidecar |
@@ -81,6 +81,8 @@
 
 ## LAYER 6 — Agent Capstone (Track C) — GeoAI Ch 14
 
+**Early learning checkpoint:** after F7, build a Track-A-only Scout shell for Chapter 14 practice. It is not a numbered feature, cannot make site recommendations, and does not count as F37/F39 completion. Track A and Track B remain decoupled until Phase 4.
+
 | # | Feature | Primary Chapter | Status | Notes |
 |---|---|---|---|---|
 | 37 | ReAct loop with tool-calling LLM (Llama or Claude) | GeoAI Ch 14 | ⏳ | Study Milan's example verbatim first |
@@ -127,12 +129,12 @@
 | GeoAI Ch 11 | 47 (redundant with UA Ch 2) | 0 | Skip |
 | GeoAI Ch 12 | 51 (optional) | 1 | ⚠️ Phase 6+ |
 | GeoAI Ch 13 | 52 (optional) | 2 | ⚠️ Phase 6+ |
-| GeoAI Ch 14 | 37, 38 | 2 study + 4 build | ⏳ Phase 4 |
+| GeoAI Ch 14 | 37, 38 | 1 preview after F7; 2 study + 4 build | ⏳ Full adaptation Phase 4 |
 | External Track A | 6, 7, 8, 9 | 2-3 | ⚠️ |
 | External Track B | 31-36 | 3-5 | 🔒 Phase 3 |
 | External Track C | 39, 40, 41 | 2 | ⏳ Phase 4 |
 | External Delivery | 44, 45 | Phase 5+ | ⚠️ |
 
 **Total features:** 52
-**Directly covered by a Milan course chapter:** ~30
-**External work:** ~22
+**Directly covered without substantial external adaptation:** ~21 (~40%)
+**External or substantial adaptation work:** ~31 (~60%)

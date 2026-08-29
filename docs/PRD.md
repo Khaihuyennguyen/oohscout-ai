@@ -143,10 +143,11 @@ Priority scale:
 **F1. Retargetable Study Area**
 - **Chapter:** UA Advanced Ch 1
 - **Priority:** P0
+- **Status:** IN PROGRESS on `feature/f1-retargetable-study-area`
 - **Input:** `PLACE = "McLennan County, Texas"`, `CRS_METRIC = 32614`, `CRS_GEOGRAPHIC = 4326`
 - **Output:** `admin_gdf` (GeoDataFrame with 1 polygon), `study_area` polygon in metric CRS
 - **Dependencies:** None (foundational)
-- **Acceptance:** Editing `PLACE` alone retargets the entire pipeline to any county. Boundary plots on Esri satellite basemap. Reported area (in km²) matches Wikipedia within 5%.
+- **Acceptance:** Editing the study-area configuration block (`PLACE`, matching `CRS_METRIC`, and the county's published reference area) retargets the study area to another county. Boundary plots on Esri satellite basemap. Reported total administrative area (in km²) matches a published Census/Wikipedia reference within 5%.
 
 ---
 
@@ -518,6 +519,8 @@ Priority scale:
 
 ### LAYER 6 — Agent Capstone (Track C)
 
+**Early learning checkpoint (not a numbered feature):** After F7, an experimental Scout shell may wrap read-only Track A functions for Chapter 14 practice. It may report supported scope, existing signs, POIs, AADT stations, and unverified scouting points. All points remain `REVIEW`. This checkpoint does not satisfy F37 or F39, does not call Track B, and does not change the Phase 4 integration gate.
+
 ---
 
 **F37. ReAct Loop with Tool-Calling LLM**
@@ -785,6 +788,7 @@ notes: "Layer name 'Commercial_Signs_Test' but contains live production data"
 Reference: `docs/MASTER_PLAN.md` Section 4 + `docs/FEATURES.md` for full ownership map.
 
 - **M1** (Week 4): Foundation shipped (F1-F5) after UA Adv Ch 1
+- **M1a** (after F7): Experimental Track-A-only Scout shell; no recommendations and no Track B integration
 - **M2** (Week 10): Track A demand engine (F10-F18) after UA Adv Ch 2 + 3
 - **M3** (Week 14): Spacing engine live (F6-F9)
 - **M4** (Week 18): Site quality + scoring (F19-F30)

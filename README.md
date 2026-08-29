@@ -2,7 +2,7 @@
 
 **AI-assisted OOH (out-of-home advertising) development desk.** Turns fragmented regulations, geospatial data, traffic, parcels, and market signals into a ranked billboard-acquisition pipeline — one highway corridor at a time.
 
-**Status:** Pre-development (foundation phase). Not yet public.
+**Status:** Foundation implementation — Feature 1 in progress on `feature/f1-retargetable-study-area`. Not yet public.
 **MVP scope:** IH-35 through McLennan County, Texas. 5-20 ranked candidate sites.
 **Product owner:** Nguyen Khai Huyen
 
@@ -23,6 +23,8 @@ Both goals share the same codebase and use every technique learned from **Dr. Mi
 - **Track C — Agent Capstone** — ReAct loop wrapping Track A + Track B as tools
 
 Tracks stay decoupled until integration. See `docs/PRD.md` for detail.
+
+An **experimental Scout shell** may be introduced after F7 to expose read-only Track A tools and unverified scouting points. It is not the Phase 4 Track C agent, does not call Track B, and cannot recommend a build site. Official F37 remains blocked until F39 and F40 are ready.
 
 ---
 
@@ -65,7 +67,7 @@ billboardAI/
 │       └── chapters/                Per-chapter learning artifacts
 │           ├── geoai_ch04_data_prep/         ✅ Done
 │           ├── geoai_ch05_segmentation/      ✅ Done
-│           └── ua_advanced_ch01_setup/       ⏳ Next
+│           └── ua_advanced_ch01_setup/       🚧 F1 in progress
 │
 └── (external, gitignored) reference materials
     ├── GeoAI_Essentials_Chapters/   Milan's GeoAI course (local only, not committed)
@@ -136,7 +138,7 @@ See `docs/MASTER_PLAN.md` Section 4 for the ~27-week roadmap.
 | Phase | Weeks | Deliverable |
 |---|---|---|
 | Phase 0 — Foundations | 1-4 | Urban Analytics Intro fluency check |
-| Phase 1 — Track A Foundation | 5-8 | Retargetable corridor + demand engine |
+| Phase 1 — Track A Foundation | 5-8 | Retargetable corridor + demand engine; experimental Scout shell after F7 |
 | Phase 2 — Track A Spacing + Quality | 9-14 | LRS engine + zoning + scoring |
 | Phase 3 — Track B RAG | 15-18 | Standalone regulatory intelligence |
 | Phase 4 — Track C Agent | 19-22 | Integrated ReAct agent |
@@ -149,7 +151,7 @@ See `docs/MASTER_PLAN.md` Section 4 for the ~27-week roadmap.
 Milan Janosov's courses (external — you purchase these separately):
 - **Urban Analytics Intro** — foundations (GeoPandas, OSMnx) — recommended per Milan's advice
 - **Urban Analytics Advanced** — Ch 1-6 provide 20+ OOHScout features
-- **GeoAI Essentials** — Ch 4/5 done ✅; Ch 14 for the agent capstone
+- **GeoAI Essentials** — Ch 4/5 done ✅; optional Ch 14 preview after F7, full OOHScout adaptation in Phase 4
 - **101 Steps to GeoAI from Scratch** — Milan says closest to this project
 
 ---
