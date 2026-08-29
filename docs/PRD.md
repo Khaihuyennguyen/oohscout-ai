@@ -157,7 +157,7 @@ Priority scale:
 **F1a. Make `backend/src/oohscout/` an installable package**
 - **Chapter:** Project infrastructure (external — no course covers this)
 - **Priority:** P0 (blocks every future production module from being importable)
-- **Status:** ⏳ Queued — next branch `feature/f1a-installable-package`
+- **Status:** ✅ SHIPPED 2026-08-29 on `feature/f1a-installable-package`
 - **Input:** Existing `pyproject.toml`, `backend/src/oohscout/` layout, F1's production module.
 - **Output:** `oohscout` is a real installed package; `uv sync` makes `import oohscout.track_a_spatial` work from any Python entry point (FastAPI, agent tool, pytest, ad-hoc script).
 - **Dependencies:** F1 (module needs to exist to import).
@@ -168,6 +168,8 @@ Priority scale:
   4. `backend/tests/track_a/test_study_area.py` exists and passes under `uv run pytest backend/tests/track_a/test_study_area.py` — one test that calls `load_or_build_study_area("McLennan County, Texas", 32614, ...)` with `reference_total_area_km2=2746.0` and asserts no exception; one test that calls `assert_contains_point(study, -97.1467, 31.5493)` and asserts no exception.
   5. The F1 code-along notebook cell 7 ("Import from the production module") runs successfully.
 - **Rationale:** The user's expanded goal is a working production site, not notebook-only. Splitting the packaging into its own tightly-scoped feature keeps F1's PRD scope honest, makes F1a's success/failure easy to see, and unblocks every future feature (F2+) from having a real importable module rather than an orphan `.py` file.
+- **Result:** All 5 gate items green. `pyproject.toml` now has `[build-system] requires = ["hatchling"]` + `[tool.hatch.build.targets.wheel]` mapping `backend/src` → wheel root so `oohscout` is the import name. `[tool.uv] package = false` removed. `pytest` added as a dev dependency; `[tool.pytest.ini_options]` points at `backend/tests/` with a project-local `--basetemp=.pytest_tmp` to bypass a Windows AppData ACL quirk. Five tests pass in `backend/tests/track_a/test_study_area.py` — one-polygon check, metric CRS check, Census-area-within-5% check, Waco-courthouse-inside-boundary check (Option B), wrong-reference-area-raises negative test.
+- **Artifacts:** `pyproject.toml` (build-system + hatch + pytest config); `backend/tests/track_a/test_study_area.py`; `backend/tests/track_a/__init__.py`; `.gitignore` (adds `.pytest_tmp/`).
 
 ---
 

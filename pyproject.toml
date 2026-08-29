@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "oohscout-ai"
 version = "0.0.1"
@@ -62,8 +66,14 @@ dependencies = [
     "segment-geospatial",  # GeoAI Ch 13 SAM
 ]
 
-[tool.uv]
-package = false
+# F1a — package the backend/src/oohscout tree as the importable `oohscout` module.
+# Hatchling needs an explicit sources map because our layout is
+# `backend/src/oohscout/` (non-standard) rather than `src/oohscout/`.
+[tool.hatch.build.targets.wheel]
+packages = ["backend/src/oohscout"]
+
+[tool.hatch.build.targets.wheel.sources]
+"backend/src" = ""
 
 # PyPI serves CPU-only PyTorch wheels on Windows. Pin the Windows install to
 # the official CUDA 13.0 index so this workstation's NVIDIA GPU is usable.
@@ -79,3 +89,14 @@ torchvision = [
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
 explicit = true
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+# --basetemp anchors tmp_path under the project because Windows AppData Temp
+# occasionally acquires ACLs pytest can't enumerate. Local dir is gitignored.
+addopts = "-ra -q --basetemp=.pytest_tmp"
