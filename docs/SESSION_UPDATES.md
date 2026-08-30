@@ -4,6 +4,50 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ---
 
+## 2026-08-29 — F2 IH-35 Centerline SHIPPED
+
+**Branch:** `feature/f2-ih35-centerline`
+**Feature shipped:** F2 (IH-35 highway centerline for McLennan County)
+**PRD reference:** [docs/PRD.md § 6 F2](PRD.md)
+
+### What was built
+
+- **Production module** [backend/src/oohscout/track_a_spatial/corridor.py](../backend/src/oohscout/track_a_spatial/corridor.py) — `Corridor` dataclass + `load_or_build_ih35_centerline(admin_poly, cache_dir)`. Filters OSM motorways by `ref` prefix, dedupes exact-duplicate ways OSMnx occasionally returns, projects to metric CRS, caches as `.gpkg`.
+- **Chapter folder** [docs/learning/chapters/ua_advanced_ch01_ih35/](learning/chapters/ua_advanced_ch01_ih35/) — 5-file convention. The 01/02 files are short pointers back to F1 because the underlying Milan chapter is the same. The 03 notebook imports directly from the production module (F1a made this possible from day one).
+- **Tests** [backend/tests/track_a/test_corridor.py](../backend/tests/track_a/test_corridor.py) — 7 pytests covering segment count, geometry types, unique osmid, metric CRS, plausible length range, cache existence, and wrong-reference-length negative test.
+
+### Evidence of shipping
+
+| Gate item | Result |
+|---|---|
+| Overpass returned segments | ✅ 245 LineString ways |
+| Geometry filter kept only lines | ✅ `LineString` only |
+| `osmid.is_unique` after dedupe | ✅ (4 exact-dupe rows collapsed) |
+| Total length plausible for IH-35 through McLennan | ✅ 131.06 km (both directions + frontage) |
+| Metric CRS matches EPSG:32614 | ✅ |
+| `.gpkg` cache written | ✅ `mclennan_ih35_centerline.gpkg` |
+| Pytest suite | ✅ **7 passed** (12 total across F1 + F2) |
+
+### One thing I learned mid-build
+
+OSMnx 2.x's `features_from_polygon` occasionally returns the same OSM way twice with byte-identical geometry — I hit this on the first live fetch and had to add `drop_duplicates(subset=['osmid'])` before the unique-key assertion. Verified safe: `.geometry.equals()` returned `True` for all duplicate pairs. Documented in [04_adaptation_explanation.md](learning/chapters/ua_advanced_ch01_ih35/04_adaptation_explanation.md).
+
+### Why the length is 131 km, not the ~55 km Google Maps shows
+
+OSM stores IH-35 as **separate ways per direction**. Northbound + southbound each contribute ~55 km. Frontage roads and access segments that carry the `I 35` ref add another ~20 km. For OOHScout the both-direction total is what we want — billboard sites exist on both sides of the highway.
+
+### What this unlocks
+
+- **F6 (corridor buffer)** — `unary_union(corridor_gdf_metric.geometry).buffer(500)` gives the 500m search zone as one polygon.
+- **F7 (candidate sampling)** — `line.interpolate(distance_along)` every 1 km along the merged centerline produces WA-000...WA-039 candidate points.
+- **F8 (spacing engine)** — projects existing TxDOT permit points onto the centerline for 1D distance math.
+
+### Next branch
+
+F6 or F7 (both depend on F2, both fit in the same UA Ch 1 → UA Intro Shapely-basics territory).
+
+---
+
 ## 2026-08-29 — F1a Installable Package SHIPPED
 
 **Branch:** `feature/f1a-installable-package`
