@@ -15,12 +15,12 @@
 ### Honest count (as of 2026-08-29)
 
 **Total features in scope:** 52 numbered + 1 infra follow-up (F1a)
-**Actually shipped (working on real Waco data):** 3 (F1, F3, F42)
+**Actually shipped (working on real Waco data):** 4 (F1, F1a, F3, F42)
 **In progress:** 0
-**Queued next (infra):** 1 (F1a — make `backend/src/oohscout/` installable so F1's module works outside a notebook)
+**Queued next:** F2 (IH-35 highway centerline for McLennan)
 **Partial/prototype only:** 3 (F6, F7, F43)
 **Technique learned but not applied to Waco:** 2 (F21, F23)
-**Not started:** 44
+**Not started:** 43
 
 ### Feature-by-feature status
 
@@ -32,8 +32,8 @@
 | 21 | NDVI vegetation buffer (technique from Ch 4) | 🎓 **Technique learned, not applied** | Ch 4 done; not integrated into Waco pipeline |
 | — | GeoAI Ch 4 & 5 course techniques | 🎓 **Learned** | Explanation files in `notebooks/` |
 | 43 | GeoPackage exports | ⚠️ **Partial** | Currently using GeoJSON with projected coords (RFC-noncompliant) |
-| 1 | Retargetable study area | ✅ **Shipped 2026-08-29** | McLennan County resolved via OSMnx, projected to EPSG:32614, area 2,747.3 km² (0.05% off Census). Cache: `backend/data/processed/mclennan_county_study_area.gpkg`. Notebook: `docs/learning/chapters/ua_advanced_ch01_setup/03_oohscout_adaptation.ipynb`. Production module: `backend/src/oohscout/track_a_spatial/study_area.py`. Visual check: `backend/data/processed/mclennan_f1_check.png`. **Module not yet importable — see F1a.** |
-| 1a | Make `backend/src/oohscout/` installable + smoke test | ⏳ **Queued next** | Follow-up to F1. Fixes `pyproject.toml` (`package = false` → `true`), adds build-system + hatch config, `uv sync`, verifies `from oohscout.track_a_spatial import load_or_build_study_area` works, adds one pytest. Branch: `feature/f1a-installable-package`. Blocks F2 from repeating the same orphan-module problem. |
+| 1 | Retargetable study area | ✅ **Shipped 2026-08-29** | McLennan County resolved via OSMnx, projected to EPSG:32614, area 2,747.3 km² (0.05% off Census). Cache: `backend/data/processed/mclennan_county_study_area.gpkg`. Notebook: `docs/learning/chapters/ua_advanced_ch01_setup/03_oohscout_adaptation.ipynb`. Production module: `backend/src/oohscout/track_a_spatial/study_area.py`. Visual check: `backend/data/processed/mclennan_f1_check.png`. Module made importable by F1a. |
+| 1a | Make `backend/src/oohscout/` installable + smoke test | ✅ **Shipped 2026-08-29** | `pyproject.toml` uses hatchling; `uv sync` installs `oohscout-ai==0.0.1` editable; `from oohscout.track_a_spatial import load_or_build_study_area` works; 5 pytests pass in `backend/tests/track_a/test_study_area.py`. Notebook and module both compute area = 2,747.33 km². Branch: `feature/f1a-installable-package`. |
 | 2, 5 | Base geometry, test bbox | ❌ **Not started (proper form)** | Begin only after F1 assertions and visual check pass |
 | 4 | Provenance metadata | ❌ **Not started** | No `source.yaml` sidecars yet |
 | 6, 7 | Corridor buffer, candidate sampling | ⚠️ **Prototype only** | In `oohscout_texas_corridor.ipynb` but techniques come from unstudied chapters |
@@ -46,27 +46,25 @@
 
 ### The next feature you should do
 
-**F1a — Make `backend/src/oohscout/` installable + one smoke test.**
+**F2 — Base Geometry: IH-35 highway centerline for McLennan County.**
 
-**Why this before F2:**
-- F1's production module exists on disk but is not importable (`pyproject.toml` sets `[tool.uv] package = false`). Every future feature (F2+) would ship the same broken pattern if we don't fix it now.
-- Small, tightly-scoped: 30-60 min of work, all in `pyproject.toml` + one test file.
-- Turns the module I wrote for F1 into something FastAPI, agent tools, and pytest can actually import.
-- Unblocks the code-along notebook's cell 7 (which asserts notebook output == module output).
-
-**Branch to create:** `feature/f1a-installable-package` (branch off `main` after merging F1)
-
-**Completion gate:**
-1. `uv sync` completes.
-2. `uv run python -c "from oohscout.track_a_spatial import load_or_build_study_area; print('ok')"` prints `ok`.
-3. `uv run pytest backend/tests/track_a/test_study_area.py` passes with at least one test on McLennan area + Waco containment.
-
-**Then F2 — Base Geometry: IH-35 highway centerline for McLennan County.**
+**Why this one:**
+- F1 + F1a are shipped. `admin_poly` from F1 is the input; the production module now sits in an installable package so F2's `corridor.py` will be importable from day one.
 - Buildings-example pattern maps directly: swap `tags={"building": True}` for `tags={"highway": ["motorway"]}`, swap polygon-filter for LineString-filter.
 - Same 5-file convention in a new chapter folder (probably `ua_advanced_ch01_ih35/`).
-- Because F1a is done, F2's production module `corridor.py` will be importable from day one — no orphan file.
-- Branch: `feature/f2-ih35-centerline`.
-- Completion gate: IH-35 centerline downloaded, filtered to LineString-only, projected to EPSG:32614, `assert osmid.is_unique` passes, total length within 10% of Google Maps, cached as `backend/data/processed/mclennan_ih35_centerline.gpkg`, module importable, one pytest passes.
+- Unlocks F6 (buffer) and F7 (candidate sampling).
+
+**Branch to create:** `feature/f2-ih35-centerline` (branch off `main` after merging F1a).
+
+**Completion gate:**
+1. IH-35 centerline downloaded via `ox.features_from_polygon(admin_poly, tags={"highway": ["motorway"]})`.
+2. Filtered to LineString-only.
+3. Projected to EPSG:32614.
+4. `assert osmid.is_unique` passes.
+5. Total length within 10% of Google Maps' IH-35-through-McLennan reference.
+6. Cached as `backend/data/processed/mclennan_ih35_centerline.gpkg`.
+7. Production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)` importable.
+8. Pytest `backend/tests/track_a/test_corridor.py` passes with LineString-only + length + unique-osmid assertions.
 
 **Early-agent decision:** After F7, build an experimental read-only Scout shell around Track A for motivation and Chapter 14 practice. It returns existing-market facts and unverified scouting points only. It does not recommend sites, call Track B, or complete F37/F39. Full Track A + Track B integration remains Phase 4.
 

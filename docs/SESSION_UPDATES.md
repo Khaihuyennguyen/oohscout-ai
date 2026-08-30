@@ -4,6 +4,39 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ---
 
+## 2026-08-29 — F1a Installable Package SHIPPED
+
+**Branch:** `feature/f1a-installable-package`
+**Feature shipped:** F1a (make `backend/src/oohscout/` a real installable Python package with pytest smoke tests)
+**PRD reference:** [docs/PRD.md § 6 F1a](PRD.md)
+
+### What was built
+
+- **[pyproject.toml](../pyproject.toml)** — added `[build-system] requires = ["hatchling"]`; removed `[tool.uv] package = false`; added `[tool.hatch.build.targets.wheel]` with `packages = ["backend/src/oohscout"]` and a `sources` map (`"backend/src" = ""`) so the wheel installs `oohscout` as the top-level import name despite the non-standard `backend/src/` layout; added `pytest>=9.1.1` to `[dependency-groups] dev`; added `[tool.pytest.ini_options]` with `testpaths = ["backend/tests"]` and `--basetemp=.pytest_tmp` (works around a Windows AppData ACL quirk where pytest can't enumerate its default temp dir).
+- **[backend/tests/track_a/test_study_area.py](../backend/tests/track_a/test_study_area.py)** — 5 pytests: one-polygon returned, metric CRS matches request, area within 5% of Census reference, Waco courthouse inside boundary (Option B), wrong reference area raises AssertionError (negative test).
+- **[backend/tests/track_a/__init__.py](../backend/tests/track_a/__init__.py)** — empty package marker for pytest discovery.
+- **[.gitignore](../.gitignore)** — added `.pytest_tmp/`.
+
+### Evidence of shipping
+
+| Gate item | Result |
+|---|---|
+| `pyproject.toml` build-system + hatch config | ✅ hatchling wired; `uv sync` builds `oohscout-ai==0.0.1` |
+| `uv sync` completes | ✅ 1 package installed (editable) |
+| `from oohscout.track_a_spatial import load_or_build_study_area` | ✅ Prints `module: importable OK` |
+| Pytest McLennan area + Waco containment | ✅ **5 passed in 8.07s** |
+| Notebook / module parity | ✅ Both compute 2,747.33 km² for McLennan |
+
+### What this unlocks
+
+Every future feature (F2 onward) can ship a real production module in `backend/src/oohscout/<track>/<feature>.py` and be imported from FastAPI, agent tools, and pytest immediately. The dual-track discipline (notebook = learning, module = production) is now enforceable — a parity test can be written for any future feature the same way `test_study_area.py` currently proves F1 works outside the notebook.
+
+### Next branch
+
+`feature/f2-ih35-centerline` — same 5-file convention in `docs/learning/chapters/ua_advanced_ch01_ih35/`, applied to IH-35 highway centerline for McLennan. Production module: `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)`. Because F1a is done, this module will be importable + testable from day one.
+
+---
+
 ## 2026-08-29 — F1 Retargetable Study Area SHIPPED
 
 **Branch:** `feature/f1-retargetable-study-area`
