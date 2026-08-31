@@ -26,7 +26,7 @@
 | 1a | Make `backend/src/oohscout/` an installable package + smoke test | Project infra (external) | ✅ | Shipped 2026-08-29 on `feature/f1a-installable-package`. Hatchling build backend added; `uv sync` installs `oohscout-ai==0.0.1` in editable mode; `from oohscout.track_a_spatial import load_or_build_study_area` works; 5 pytests in `backend/tests/track_a/test_study_area.py` pass. Notebook and module now produce identical area (2,747.33 km²). |
 | 2 | Base geometry = IH-35 highway centerline with unique key | UA Advanced Ch 1 | ✅ | Shipped 2026-08-29 on `feature/f2-ih35-centerline`. 245 LineString segments, ~131 km (both directions + frontage), `osmid` unique after OSMnx-duplicate dedupe. Cache: `backend/data/processed/mclennan_ih35_centerline.gpkg`. Production module: `backend/src/oohscout/track_a_spatial/corridor.py`. 7 pytests pass. |
 | 3 | Multi-source ingestion + cache pattern | UA Adv Ch 1 + your existing notebook | ✅ | TxDOT REST, OSM, later MCAD |
-| 4 | Data provenance metadata (license, source, freshness) | `CLAUDE.md` rule + UA Ch 4 discipline | ⏳ | Every dataset carries `source.yaml` sidecar |
+| 4 | Data provenance metadata (license, source, freshness) | `CLAUDE.md` rule + UA Ch 4 discipline | ✅ | Shipped 2026-08-30 on `feature/f4-provenance-metadata`. `SourceRecord` dataclass + `write_source_yaml()` / `audit_provenance()` in `backend/src/oohscout/data/provenance.py`. McLennan boundary + IH-35 centerline have sidecars. 7 pytests pass (roundtrip + audit + real-folder integrity gate). |
 | 5 | Test-bbox subset for fast iteration (DEV_MODE) | UA Adv Ch 1, UA Adv Ch 3 | ⏳ | Waco urban bbox subset of McLennan |
 
 ## LAYER 2 — Corridor Engine (Track A)

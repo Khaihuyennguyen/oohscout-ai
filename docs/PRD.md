@@ -199,10 +199,13 @@ Priority scale:
 **F4. Data Provenance Metadata**
 - **Chapter:** `CLAUDE.md` rule + UA Ch 4 discipline
 - **Priority:** P0
+- **Status:** ✅ SHIPPED 2026-08-30 on `feature/f4-provenance-metadata`
 - **Input:** Every dataset ingested
 - **Output:** `source.yaml` sidecar per dataset with `source_url, license_type, commercial_use_allowed, redistribution_allowed, freshness, verified_by`
 - **Dependencies:** F3
 - **Acceptance:** Every file in `data/processed/` has a `.source.yaml` sibling. Missing metadata = build failure.
+- **Result:** `backend/src/oohscout/data/provenance.py` exposes `SourceRecord` dataclass + `write_source_yaml()` + `read_source_yaml()` + `audit_provenance()`. F1's McLennan boundary and F2's IH-35 centerline each have a `.source.yaml` sidecar recording OSM ODbL license, retrieval method, record count, and attribution requirements. 7 pytests in `backend/tests/data/test_provenance.py` cover the roundtrip, negative cases, and a real-folder integrity gate (`test_project_processed_dir_is_fully_covered`) that fails the build if any data file ships without a sidecar. Total suite: **19 passed**.
+- **Artifacts:** Module `backend/src/oohscout/data/provenance.py`; tests `backend/tests/data/test_provenance.py`; chapter folder `docs/learning/chapters/f4_provenance_metadata/` (5-file convention); sidecars in `backend/data/processed/*.source.yaml`.
 
 ---
 

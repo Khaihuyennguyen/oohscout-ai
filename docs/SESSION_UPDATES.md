@@ -4,6 +4,38 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ---
 
+## 2026-08-30 — F4 Data Provenance Sidecars SHIPPED
+
+**Branch:** `feature/f4-provenance-metadata`
+**Feature shipped:** F4 (`.source.yaml` sidecar per cached dataset)
+
+### What was built
+
+- **Production module** [backend/src/oohscout/data/provenance.py](../backend/src/oohscout/data/provenance.py) — `SourceRecord` dataclass + `write_source_yaml()` + `read_source_yaml()` + `audit_provenance()`. 8-field schema (source_name, source_url, retrieval_date, retrieval_method, record_count, license, commercial_use_allowed, redistribution_allowed) + optional `authority` and `notes`.
+- **Tests** [backend/tests/data/test_provenance.py](../backend/tests/data/test_provenance.py) — 7 pytests: extension swap, write/read roundtrip, missing-sidecar raises, audit finds missing, audit passes when covered, audit ignores sidecar files themselves, real-folder integrity gate (`test_project_processed_dir_is_fully_covered`).
+- **Chapter folder** [docs/learning/chapters/f4_provenance_metadata/](learning/chapters/f4_provenance_metadata/) — full 5-file convention: 01/02 short pointers (F4 not a Milan chapter), runnable 03 adaptation, deep 04 explanation, 05 code-along.
+- **Real sidecars** — `mclennan_county_study_area.source.yaml` and `mclennan_ih35_centerline.source.yaml` written next to F1 + F2 outputs.
+- **New dependency** — `pyyaml>=6.0.3` added to `pyproject.toml`.
+
+### Evidence
+
+| Gate item | Result |
+|---|---|
+| Every dataset in `backend/data/processed/` has a sidecar | ✅ 2/2 sidecars exist |
+| Sidecars are valid YAML with required fields | ✅ Roundtrip test passes |
+| Real-folder audit test | ✅ `test_project_processed_dir_is_fully_covered` passes |
+| Pytest total | ✅ **19 passed** (5 F1 + 7 F2 + 7 F4) |
+
+### Fixing a scaffolding mistake
+
+Initial F4 scaffold shipped with only README + a prompts-only notebook. User pushed back — the "scaffold" rule meant the FULL 5-file convention (like F1 and F2 shipped). Memory `feedback_feature_pause_point.md` now has an explicit "common mistake to avoid" note pointing at this F4 slip.
+
+### Next branch
+
+`feature/f5-test-bbox` — DEV_MODE bbox subset for fast iteration inside Waco urban area. Depends on F1 + F2.
+
+---
+
 ## 2026-08-29 — F2 IH-35 Centerline SHIPPED
 
 **Branch:** `feature/f2-ih35-centerline`
