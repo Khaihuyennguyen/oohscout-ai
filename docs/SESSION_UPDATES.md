@@ -12,7 +12,7 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ### What was built
 
-- **Production module** [backend/src/oohscout/track_a_spatial/corridor.py](../backend/src/oohscout/track_a_spatial/corridor.py) — `Corridor` dataclass + `load_or_build_ih35_centerline(admin_poly, cache_dir)`. Filters OSM motorways by `ref` prefix, dedupes exact-duplicate ways OSMnx occasionally returns, projects to metric CRS, caches as `.gpkg`.
+- **Production module** [backend/src/oohscout/track_a_spatial/corridor.py](../backend/src/oohscout/track_a_spatial/corridor.py) — `Corridor` dataclass + `load_or_build_highway_centerline(admin_poly, cache_dir)`. Filters OSM motorways by `ref` prefix, dedupes exact-duplicate ways OSMnx occasionally returns, projects to metric CRS, caches as `.gpkg`.
 - **Chapter folder** [docs/learning/chapters/ua_advanced_ch01_ih35/](learning/chapters/ua_advanced_ch01_ih35/) — 5-file convention. The 01/02 files are short pointers back to F1 because the underlying Milan chapter is the same. The 03 notebook imports directly from the production module (F1a made this possible from day one).
 - **Tests** [backend/tests/track_a/test_corridor.py](../backend/tests/track_a/test_corridor.py) — 7 pytests covering segment count, geometry types, unique osmid, metric CRS, plausible length range, cache existence, and wrong-reference-length negative test.
 
@@ -77,7 +77,7 @@ Every future feature (F2 onward) can ship a real production module in `backend/s
 
 ### Next branch
 
-`feature/f2-ih35-centerline` — same 5-file convention in `docs/learning/chapters/ua_advanced_ch01_ih35/`, applied to IH-35 highway centerline for McLennan. Production module: `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)`. Because F1a is done, this module will be importable + testable from day one.
+`feature/f2-ih35-centerline` — same 5-file convention in `docs/learning/chapters/ua_advanced_ch01_ih35/`, applied to IH-35 highway centerline for McLennan. Production module: `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_highway_centerline(admin_poly, cache_dir)`. Because F1a is done, this module will be importable + testable from day one.
 
 ---
 

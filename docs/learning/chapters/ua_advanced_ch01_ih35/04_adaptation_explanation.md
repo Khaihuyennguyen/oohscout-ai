@@ -22,7 +22,7 @@ Same shape as [F1's deep walkthrough](../ua_advanced_ch01_setup/04_adaptation_ex
 
 **WHY the import from `oohscout.track_a_spatial`.** This is the whole reason F1a existed. Before F1a, `study_area.py` and `corridor.py` were orphan files nobody could reach. After F1a, they're a real installed package. The notebook now imports them the same way it would import geopandas or matplotlib — no path hacks, no `sys.path.insert`.
 
-**HOW.** `load_or_build_study_area` and `load_or_build_ih35_centerline` are both cache-first — if the `.gpkg` file already exists on disk, they read it and skip the network round-trip. First run downloads; every run after is nearly instant.
+**HOW.** `load_or_build_study_area` and `load_or_build_highway_centerline` are both cache-first — if the `.gpkg` file already exists on disk, they read it and skip the network round-trip. First run downloads; every run after is nearly instant.
 
 ---
 
@@ -46,7 +46,7 @@ Same shape as [F1's deep walkthrough](../ua_advanced_ch01_setup/04_adaptation_ex
 
 ## Cells 5-6 — Fetch IH-35
 
-**WHAT.** One function call: `load_or_build_ih35_centerline(admin_poly=study.admin_poly, cache_dir=DATA_DIR, crs_metric=CRS_METRIC)`. Prints segments, geometry types, unique-osmid check, total length, cache path.
+**WHAT.** One function call: `load_or_build_highway_centerline(admin_poly=study.admin_poly, cache_dir=DATA_DIR, crs_metric=CRS_METRIC)`. Prints segments, geometry types, unique-osmid check, total length, cache path.
 
 **WHY it's one line here but 200 lines in the module.** The module does the work; the notebook proves it works. If we ever change what "IH-35 centerline" means (e.g., exclude frontage roads), we change one file — the module — and every notebook and test picks it up automatically.
 

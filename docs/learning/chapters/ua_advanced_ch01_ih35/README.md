@@ -23,7 +23,7 @@ Same shape as [F1's chapter folder](../ua_advanced_ch01_setup/README.md). For F2
 - ✅ Projected to EPSG:32614.
 - ✅ Cached at `backend/data/processed/mclennan_ih35_centerline.gpkg`.
 - ✅ Visual check `backend/data/processed/mclennan_ih35_f2_check.png` shows red lines tracing IH-35 diagonally through Waco.
-- ✅ Production module exposes `load_or_build_ih35_centerline()` and the `Corridor` dataclass.
+- ✅ Production module exposes `load_or_build_highway_centerline()` and the `Corridor` dataclass.
 - ✅ Pytest at `backend/tests/track_a/test_corridor.py` — all tests pass.
 
 **Next feature:** F6 (corridor buffer) or F7 (candidate site sampling) — both depend on F2's output.

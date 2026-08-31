@@ -64,7 +64,7 @@
 4. `assert osmid.is_unique` passes.
 5. Total length within 10% of Google Maps' IH-35-through-McLennan reference.
 6. Cached as `backend/data/processed/mclennan_ih35_centerline.gpkg`.
-7. Production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)` importable.
+7. Production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_highway_centerline(admin_poly, cache_dir)` importable.
 8. Pytest `backend/tests/track_a/test_corridor.py` passes with LineString-only + length + unique-osmid assertions.
 
 **Early-agent decision:** After F7, build an experimental read-only Scout shell around Track A for motivation and Chapter 14 practice. It returns existing-market facts and unverified scouting points only. It does not recommend sites, call Track B, or complete F37/F39. Full Track A + Track B integration remains Phase 4.
@@ -375,7 +375,7 @@ billboardAI/
 
 **Step 2 — Add production backend for F1:** The notebook is the learning artifact; the app-facing code is `backend/src/oohscout/track_a_spatial/study_area.py`. Its `load_or_build_study_area(place, crs_metric, cache_dir)` function is what FastAPI, agent tools, and tests import. The notebook is not called from production.
 
-**Step 3 — Start F2 on a new branch (`feature/f2-ih35-centerline`):** Same three-notebook flow inside the same chapter folder (or a new `ua_advanced_ch01_ih35/`). Milan's building-fetch pattern applied to `tags={"highway": ["motorway"]}`. Filter LineString-only. Assert `osmid.is_unique`. Cache as `.gpkg`. Add production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)`.
+**Step 3 — Start F2 on a new branch (`feature/f2-ih35-centerline`):** Same three-notebook flow inside the same chapter folder (or a new `ua_advanced_ch01_ih35/`). Milan's building-fetch pattern applied to `tags={"highway": ["motorway"]}`. Filter LineString-only. Assert `osmid.is_unique`. Cache as `.gpkg`. Add production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_highway_centerline(admin_poly, cache_dir)`.
 
 **Step 4 — Do not start the Scout shell until F7 is complete.**
 

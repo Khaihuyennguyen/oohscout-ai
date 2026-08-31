@@ -77,7 +77,7 @@ def _matches_ref(ref_value: object, highway_ref: str) -> bool:
     return any(part.strip().startswith(highway_ref) for part in text.split(";"))
 
 
-def load_or_build_ih35_centerline(
+def load_or_build_highway_centerline(
     admin_poly: BaseGeometry,
     cache_dir: Path,
     *,

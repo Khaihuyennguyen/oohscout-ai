@@ -13,7 +13,7 @@ import pytest
 from oohscout.track_a_spatial import (
     Corridor,
     StudyArea,
-    load_or_build_ih35_centerline,
+    load_or_build_highway_centerline,
     load_or_build_study_area,
 )
 
@@ -51,7 +51,7 @@ def study_and_cache_dir(
 @pytest.fixture(scope="module")
 def corridor(study_and_cache_dir: tuple[StudyArea, Path]) -> Corridor:
     study, cache_dir = study_and_cache_dir
-    return load_or_build_ih35_centerline(
+    return load_or_build_highway_centerline(
         admin_poly=study.admin_poly,
         cache_dir=cache_dir,
         crs_metric=MCLENNAN_CRS_METRIC,
@@ -99,7 +99,7 @@ def test_wrong_reference_length_raises(
     """Retargeting with a nonsense reference length must fail loudly."""
     study, _ = study_and_cache_dir
     with pytest.raises(AssertionError, match="differs from reference"):
-        load_or_build_ih35_centerline(
+        load_or_build_highway_centerline(
             admin_poly=study.admin_poly,
             cache_dir=tmp_path,
             crs_metric=MCLENNAN_CRS_METRIC,

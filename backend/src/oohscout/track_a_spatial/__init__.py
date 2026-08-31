@@ -17,7 +17,7 @@ Planned modules:
 
 from oohscout.track_a_spatial.corridor import (
     Corridor,
-    load_or_build_ih35_centerline,
+    load_or_build_highway_centerline,
 )
 from oohscout.track_a_spatial.study_area import (
     StudyArea,
@@ -29,6 +29,6 @@ __all__ = [
     "Corridor",
     "StudyArea",
     "assert_contains_point",
-    "load_or_build_ih35_centerline",
+    "load_or_build_highway_centerline",
     "load_or_build_study_area",
 ]
