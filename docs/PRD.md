@@ -176,10 +176,13 @@ Priority scale:
 **F2. Base Geometry — IH-35 Highway Centerline**
 - **Chapter:** UA Advanced Ch 1 (adapted from buildings to highway)
 - **Priority:** P0
+- **Status:** ✅ SHIPPED 2026-08-29 on `feature/f2-ih35-centerline`
 - **Input:** `admin_poly` from F1, `tags={"highway": ["motorway"]}`
 - **Output:** `mclennan_ih35_centerline.gpkg` — LineString geometries + `osmid` unique key + `length_m`
-- **Dependencies:** F1
+- **Dependencies:** F1, F1a
 - **Acceptance:** `assert osmid.is_unique` passes. Total IH-35 length in km matches Google Maps within 10%. LineString-only (no accidental polygons).
+- **Result:** 245 LineString segments returned by Overpass; all lines (no Point/Polygon leak); `osmid` unique after deduping 4 exact-duplicate rows returned by OSMnx; total length **131.06 km** (this includes both directions of travel — northbound + southbound as separate OSM ways — plus frontage/access segments carrying the `I 35` ref; Google Maps one-direction is ~55 km, so both-direction × 2 + frontage ≈ 131 km); projected to EPSG:32614; cached at `backend/data/processed/mclennan_ih35_centerline.gpkg`; visual check shows red lines tracing IH-35 diagonally through Waco on Esri basemap. 7 pytests pass in `backend/tests/track_a/test_corridor.py`.
+- **Artifacts:** Chapter folder `docs/learning/chapters/ua_advanced_ch01_ih35/` (5-file convention: 01 pointer, 02 pointer, 03 adaptation, 04 deep explanation, 05 code-along, README); production module `backend/src/oohscout/track_a_spatial/corridor.py` (exports `Corridor` dataclass + `load_or_build_highway_centerline()`); test file `backend/tests/track_a/test_corridor.py`.
 
 ---
 

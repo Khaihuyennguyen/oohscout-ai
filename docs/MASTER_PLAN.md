@@ -15,12 +15,12 @@
 ### Honest count (as of 2026-08-29)
 
 **Total features in scope:** 52 numbered + 1 infra follow-up (F1a)
-**Actually shipped (working on real Waco data):** 4 (F1, F1a, F3, F42)
+**Actually shipped (working on real Waco data):** 5 (F1, F1a, F2, F3, F42)
 **In progress:** 0
-**Queued next:** F2 (IH-35 highway centerline for McLennan)
+**Queued next:** F6 (corridor buffer) or F7 (candidate sampling) — both depend on F2
 **Partial/prototype only:** 3 (F6, F7, F43)
 **Technique learned but not applied to Waco:** 2 (F21, F23)
-**Not started:** 43
+**Not started:** 42
 
 ### Feature-by-feature status
 
@@ -34,7 +34,8 @@
 | 43 | GeoPackage exports | ⚠️ **Partial** | Currently using GeoJSON with projected coords (RFC-noncompliant) |
 | 1 | Retargetable study area | ✅ **Shipped 2026-08-29** | McLennan County resolved via OSMnx, projected to EPSG:32614, area 2,747.3 km² (0.05% off Census). Cache: `backend/data/processed/mclennan_county_study_area.gpkg`. Notebook: `docs/learning/chapters/ua_advanced_ch01_setup/03_oohscout_adaptation.ipynb`. Production module: `backend/src/oohscout/track_a_spatial/study_area.py`. Visual check: `backend/data/processed/mclennan_f1_check.png`. Module made importable by F1a. |
 | 1a | Make `backend/src/oohscout/` installable + smoke test | ✅ **Shipped 2026-08-29** | `pyproject.toml` uses hatchling; `uv sync` installs `oohscout-ai==0.0.1` editable; `from oohscout.track_a_spatial import load_or_build_study_area` works; 5 pytests pass in `backend/tests/track_a/test_study_area.py`. Notebook and module both compute area = 2,747.33 km². Branch: `feature/f1a-installable-package`. |
-| 2, 5 | Base geometry, test bbox | ❌ **Not started (proper form)** | Begin only after F1 assertions and visual check pass |
+| 2 | Base geometry — IH-35 centerline for McLennan | ✅ **Shipped 2026-08-29** | 245 LineString segments, 131 km, `osmid` unique. Cache: `backend/data/processed/mclennan_ih35_centerline.gpkg`. Chapter folder: `docs/learning/chapters/ua_advanced_ch01_ih35/`. Production module: `backend/src/oohscout/track_a_spatial/corridor.py`. 7 pytests pass. |
+| 5 | Test-bbox subset | ❌ **Not started (proper form)** | Waco urban subset for fast iteration; will use F1 admin_poly + F2 corridor as inputs |
 | 4 | Provenance metadata | ❌ **Not started** | No `source.yaml` sidecars yet |
 | 6, 7 | Corridor buffer, candidate sampling | ⚠️ **Prototype only** | In `oohscout_texas_corridor.ipynb` but techniques come from unstudied chapters |
 | 8, 9 | LRS spacing engine, 43 TAC rule table | ❌ **Not started** | Blocked on rule research |
@@ -63,7 +64,7 @@
 4. `assert osmid.is_unique` passes.
 5. Total length within 10% of Google Maps' IH-35-through-McLennan reference.
 6. Cached as `backend/data/processed/mclennan_ih35_centerline.gpkg`.
-7. Production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)` importable.
+7. Production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_highway_centerline(admin_poly, cache_dir)` importable.
 8. Pytest `backend/tests/track_a/test_corridor.py` passes with LineString-only + length + unique-osmid assertions.
 
 **Early-agent decision:** After F7, build an experimental read-only Scout shell around Track A for motivation and Chapter 14 practice. It returns existing-market facts and unverified scouting points only. It does not recommend sites, call Track B, or complete F37/F39. Full Track A + Track B integration remains Phase 4.
@@ -374,7 +375,7 @@ billboardAI/
 
 **Step 2 — Add production backend for F1:** The notebook is the learning artifact; the app-facing code is `backend/src/oohscout/track_a_spatial/study_area.py`. Its `load_or_build_study_area(place, crs_metric, cache_dir)` function is what FastAPI, agent tools, and tests import. The notebook is not called from production.
 
-**Step 3 — Start F2 on a new branch (`feature/f2-ih35-centerline`):** Same three-notebook flow inside the same chapter folder (or a new `ua_advanced_ch01_ih35/`). Milan's building-fetch pattern applied to `tags={"highway": ["motorway"]}`. Filter LineString-only. Assert `osmid.is_unique`. Cache as `.gpkg`. Add production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_ih35_centerline(admin_poly, cache_dir)`.
+**Step 3 — Start F2 on a new branch (`feature/f2-ih35-centerline`):** Same three-notebook flow inside the same chapter folder (or a new `ua_advanced_ch01_ih35/`). Milan's building-fetch pattern applied to `tags={"highway": ["motorway"]}`. Filter LineString-only. Assert `osmid.is_unique`. Cache as `.gpkg`. Add production module `backend/src/oohscout/track_a_spatial/corridor.py` with `load_or_build_highway_centerline(admin_poly, cache_dir)`.
 
 **Step 4 — Do not start the Scout shell until F7 is complete.**
 
