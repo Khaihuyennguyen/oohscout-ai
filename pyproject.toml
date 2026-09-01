@@ -9,29 +9,42 @@ description = "AI-assisted OOH billboard site intelligence for Texas highway cor
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    # Notebook runtime
+    "python-dotenv",
+    "pydantic",
+    "pyyaml>=6.0.3",
+    "mcp>=2.1.1",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi",
+    "uvicorn",
+]
+notebook = [
     "ipykernel",
     "ipywidgets",
     "jupyterlab",
-    "python-dotenv",
-    # Geospatial data layer (Track A foundation)
+]
+vector = [
     "geopandas",
     "osmnx",
     "pyproj",
-    "pystac-client",
-    "rasterio",
     "shapely",
     "contextily",
-    # Track A analytics (Milan's UA Advanced course)
-    "pandana",         # UA Ch 3 — accessibility isochrones
-    "libpysal",        # UA Ch 6 — spatial weights
-    "esda",            # UA Ch 6 — exploratory spatial data analysis
-    "spreg",           # UA Ch 6 — spatial regression (ML_Lag)
-    "mapclassify",     # UA Ch 4 — classification schemes
-    "statsmodels",     # UA Ch 6 — OLS baseline
-    # Scientific + visualization
-    "folium",
     "geopy",
+    "folium",
+    "pandana",
+    "libpysal",
+    "esda",
+    "spreg",
+    "mapclassify",
+    "statsmodels",
+]
+raster = [
+    "rasterio",
+    "pystac-client",
+]
+science = [
     "matplotlib",
     "numpy",
     "opencv-python",
@@ -40,29 +53,33 @@ dependencies = [
     "scikit-image",
     "scikit-learn",
     "scipy",
-    # Machine-learning layer (GeoAI Ch 5, 7 — Track A visibility)
+]
+ml = [
     "open-clip-torch",
     "torch",
     "torchinfo",
     "torchvision",
-    # Track B — Regulatory RAG (Phase 3)
-    "anthropic",           # Claude for LLM tasks
-    "pgvector",            # vector store
-    "psycopg[binary]",     # PostgreSQL client
-    "pydantic",            # structured schemas
-    # Track C — Agent (Phase 4)
-    "groq",                # Milan's Ch 14 default
     "huggingface-hub",
-    # Optional (defer to later phases)
-    "earthengine-api",     # GeoAI Ch 13
+    "earthengine-api",
     "geotessera",
-    "segment-geospatial",  # GeoAI Ch 13 SAM
-    "pyyaml>=6.0.3",
+    "segment-geospatial",
+]
+postgis = [
+    "psycopg[binary]",
+    "pgvector",
+]
+agent = [
+    "anthropic",
+    "groq",
+]
+all = [
+    "oohscout-ai[api,notebook,vector,raster,science,ml,postgis,agent]"
+]
+test = [
+    "oohscout-ai[all]"
 ]
 
 # F1a — package the backend/src/oohscout tree as the importable `oohscout` module.
-# Hatchling needs an explicit sources map because our layout is
-# `backend/src/oohscout/` (non-standard) rather than `src/oohscout/`.
 [tool.hatch.build.targets.wheel]
 packages = ["backend/src/oohscout"]
 
@@ -87,10 +104,10 @@ explicit = true
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "ruff",         # [NEW] Added for linting
+    "nbstripout"    # [NEW] Added to strip notebook outputs
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
-# --basetemp anchors tmp_path under the project because Windows AppData Temp
-# occasionally acquires ACLs pytest can't enumerate. Local dir is gitignored.
 addopts = "-ra -q --basetemp=.pytest_tmp"

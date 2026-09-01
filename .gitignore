@@ -56,7 +56,11 @@ cache/
 # Milan Janosov's course notebooks are purchased assets.
 GeoAI_Essentials_Chapters/
 reference/
+references/
 docs/UA/
+
+# ── graphify build output (regenerable) ─────────
+graphify-out/
 backend/notebooks/ch*_FINAL.ipynb
 backend/notebooks/Chapter_*_recorded.ipynb
 notebooks/ch*_FINAL.ipynb
