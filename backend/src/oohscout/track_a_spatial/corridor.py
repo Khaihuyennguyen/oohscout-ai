@@ -16,10 +16,14 @@ Invariants (mirrors CLAUDE.md architectural rules):
 - `osmid` (or its equivalent unique key) is asserted unique so downstream
   joins to permits, AADT stations, and candidates never explode into a
   Cartesian join.
+
+F6 (bottom of this module) turns the centerline into the search zone: every
+spot within ``distance_m`` of the highway, clipped to the study area.
 """
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -204,5 +208,168 @@ def load_or_build_highway_centerline(
         corridor_gdf=corridor_gdf,
         corridor_gdf_metric=corridor_gdf_metric,
         total_length_m=total_length_m,
+        cache_path=cache_path,
+    )
+
+
+# ---------------------------------------------------------------------------
+# F6 — corridor buffer (the search zone every later feature works inside)
+# ---------------------------------------------------------------------------
+
+BUFFER_LAYER = "corridor_buffer"
+_METRE_UNIT_NAMES = ("metre", "meter")
+
+
+@dataclass(frozen=True)
+class CorridorBuffer:
+    """Everything within ``distance_m`` of a highway, clipped to the study area.
+
+    Attributes
+    ----------
+    distance_m:
+        Buffer width in metres. A product setting ("near is a choice"), not a
+        legal distance.
+    buffer_gdf_metric:
+        One-row ``GeoDataFrame`` (``distance_m`` column + geometry) in the
+        metric CRS of the inputs.
+    area_km2:
+        Area of the zone. Sanity check: road length x 2 x distance, minus the
+        overlap between the two carriageways.
+    cache_path:
+        The ``.gpkg`` file the zone is cached to. The distance is part of the
+        file name, so a different width never returns a stale zone.
+    """
+
+    distance_m: float
+    buffer_gdf_metric: gpd.GeoDataFrame
+    area_km2: float
+    cache_path: Path
+
+
+def _require_metric_crs(gdf: gpd.GeoDataFrame, label: str) -> None:
+    """Raise ``ValueError`` unless ``gdf`` uses a projected CRS measured in metres.
+
+    ``is_projected`` alone is not enough: Texas State Plane (EPSG:2277) is
+    projected but measured in US survey feet, so ``buffer(500)`` there would
+    be 152 m, not 500 m.
+    """
+    if gdf.crs is None:
+        raise ValueError(f"{label} has no CRS defined.")
+    if not gdf.crs.is_projected:
+        raise ValueError(f"{label} CRS is in degrees; a projected CRS is required.")
+    unit = gdf.crs.axis_info[0].unit_name
+    if unit not in _METRE_UNIT_NAMES:
+        raise ValueError(f"{label} is measured in {unit!r}, not metres; reproject with .to_crs().")
+
+
+def build_corridor_buffer(
+    lines_metric: gpd.GeoDataFrame,
+    study_area_metric: gpd.GeoDataFrame,
+    distance_m: float,
+) -> BaseGeometry:
+    """Buffer the union of ``lines_metric`` by ``distance_m``, clipped to the study area.
+
+    Pure function: no files, no network. The lines are unioned *before*
+    buffering — buffering F2's 245 segments one by one would give 245
+    overlapping polygons (323 km² for McLennan at 500 m) instead of one zone
+    (65 km²).
+
+    Parameters
+    ----------
+    lines_metric:
+        Highway lines in a metric CRS (typically ``Corridor.corridor_gdf_metric``).
+    study_area_metric:
+        Study-area polygon(s) in the same CRS (typically
+        ``StudyArea.admin_gdf_metric``). A GeoDataFrame rather than a bare
+        Shapely geometry so its CRS can be checked.
+    distance_m:
+        Buffer width in metres.
+
+    Returns
+    -------
+    BaseGeometry
+        The zone — a Polygon (or MultiPolygon if the highway leaves and
+        re-enters the study area).
+
+    Raises
+    ------
+    ValueError
+        If ``distance_m`` is not a finite number > 0, either input is not in a
+        metric CRS, the two CRSs differ, or the zone is empty (the lines do
+        not reach the study area).
+    """
+    if not (math.isfinite(distance_m) and distance_m > 0):
+        raise ValueError(f"distance_m must be a real number > 0, got {distance_m!r}")
+    _require_metric_crs(lines_metric, "Highway lines")
+    _require_metric_crs(study_area_metric, "Study area")
+    if lines_metric.crs != study_area_metric.crs:
+        raise ValueError(
+            f"Highway lines ({lines_metric.crs.to_string()}) and study area "
+            f"({study_area_metric.crs.to_string()}) must use the same CRS."
+        )
+
+    # Glue the road pieces into one shape, widen it, then cut it to the study area.
+    merged = lines_metric.geometry.union_all()
+    wide = merged.buffer(distance_m)
+    study_area_shape = study_area_metric.geometry.union_all()
+    zone = wide.intersection(study_area_shape)
+    if zone.area == 0:
+        raise ValueError("Corridor buffer is empty: the highway lines do not reach the study area.")
+    return zone
+
+
+def load_or_build_corridor_buffer(
+    lines_metric: gpd.GeoDataFrame,
+    study_area_metric: gpd.GeoDataFrame,
+    cache_dir: Path,
+    *,
+    cache_slug: str,
+    distance_m: float = 500.0,
+) -> CorridorBuffer:
+    """Load a cached corridor buffer, or build and cache it if missing.
+
+    Parameters
+    ----------
+    lines_metric, study_area_metric:
+        See :func:`build_corridor_buffer`.
+    cache_dir:
+        Directory to write / read the ``.gpkg`` cache. Created if missing.
+    cache_slug:
+        Filename stem naming the corridor, e.g. ``"mclennan_ih35_buffer"``.
+        No default on purpose: the caller names the corridor, never this
+        module.
+    distance_m:
+        Buffer width in metres. Default 500 m. Becomes part of the cache
+        file name (``<cache_slug>_500m.gpkg``), so a different width never
+        returns a stale zone.
+
+    Returns
+    -------
+    CorridorBuffer
+        Frozen dataclass with the one-row zone, its area, and the cache path.
+
+    Raises
+    ------
+    ValueError
+        On a cache miss, for any input rejected by :func:`build_corridor_buffer`.
+    """
+    cache_dir = Path(cache_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / f"{cache_slug}_{distance_m:g}m.gpkg"
+
+    if cache_path.exists():
+        buffer_gdf_metric = gpd.read_file(cache_path, layer=BUFFER_LAYER)
+    else:
+        zone = build_corridor_buffer(lines_metric, study_area_metric, distance_m)
+        buffer_gdf_metric = gpd.GeoDataFrame(
+            {"distance_m": [float(distance_m)]}, geometry=[zone], crs=lines_metric.crs
+        )
+        buffer_gdf_metric.to_file(cache_path, layer=BUFFER_LAYER, driver="GPKG")
+
+    area_km2 = float(buffer_gdf_metric.geometry.area.iloc[0]) / 1_000_000.0
+    return CorridorBuffer(
+        distance_m=float(distance_m),
+        buffer_gdf_metric=buffer_gdf_metric,
+        area_km2=area_km2,
         cache_path=cache_path,
     )

@@ -6,6 +6,8 @@ Shipped modules:
 - study_area: F1 — retargetable study-area loader (McLennan County today,
   any Nominatim-geocodable place tomorrow).
 - corridor:   F2 — IH-35 highway centerline for a given study area.
+              F6 — corridor buffer: the search zone within N metres of the
+              highway, clipped to the study area.
 
 Planned modules:
 - demand:     F10-F18 — DBSCAN, KMeans, isochrones, advertiser POI features.
@@ -17,6 +19,9 @@ Planned modules:
 
 from oohscout.track_a_spatial.corridor import (
     Corridor,
+    CorridorBuffer,
+    build_corridor_buffer,
+    load_or_build_corridor_buffer,
     load_or_build_highway_centerline,
 )
 from oohscout.track_a_spatial.study_area import (
@@ -27,8 +32,11 @@ from oohscout.track_a_spatial.study_area import (
 
 __all__ = [
     "Corridor",
+    "CorridorBuffer",
     "StudyArea",
     "assert_contains_point",
+    "build_corridor_buffer",
+    "load_or_build_corridor_buffer",
     "load_or_build_highway_centerline",
     "load_or_build_study_area",
 ]

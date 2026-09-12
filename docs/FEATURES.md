@@ -33,7 +33,7 @@
 
 | # | Feature | Primary Chapter | Status | Notes |
 |---|---|---|---|---|
-| 6 | Corridor buffer (500m search zone around IH-35) | UA Intro (Shapely `.buffer()`) | ⚠️ | Milan says Advanced omits this — Intro covers it |
+| 6 | Corridor buffer (500m search zone around IH-35) | How to Think Spatially Ch 3 ("near is a choice") + GeoAI Ch 14 Step 98 (metric buffer) | ✅ | Shipped 2026-09-11 on `feature/f6-corridor-buffer`. `build_corridor_buffer()` (pure: union → buffer → clip; refuses degrees, feet, mismatched CRS, bad distance, empty zone) + `load_or_build_corridor_buffer()` (cache name includes the distance) in `backend/src/oohscout/track_a_spatial/corridor.py`. McLennan IH-35 at 500 m = 65.37 km², one polygon. 15 pytests in `backend/tests/track_a/test_corridor_buffer.py`. |
 | 7 | Candidate site sampling every 1km along centerline | UA Intro (Shapely `.interpolate()`) | ⚠️ | Same — Intro covers |
 | 8 | LRS spacing engine (1D projection of permits onto highway) | External | ⚠️ | Requires Feature 9 first |
 | 9 | 43 TAC Chapter 21 rule table (tiered, side-of-road, size-based) | External research (Track B input) | ⚠️ | Replaces the fake "1,000 ft" — real citation needed |
