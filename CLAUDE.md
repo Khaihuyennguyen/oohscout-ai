@@ -134,27 +134,21 @@ All chapter data files confirmed present in `notebooks/data/new_study/`:
 
 ---
 
-## Session progress (as of 2026-08-31)
+## Session progress (as of 2026-09-11)
 
-**On branch:** `feature/f5-test-bbox`
-
-**Shipped to `main`:**
-- **F1a** — `backend/src/oohscout` installable package + smoke tests (commit `c711d4a` → merge `5d1e9b8`)
+**Shipped to `main`** (details per feature: [docs/FEATURES.md](docs/FEATURES.md) and [docs/SESSION_UPDATES.md](docs/SESSION_UPDATES.md)):
 - **F1** — Retargetable study-area loader ([track_a_spatial/study_area.py](backend/src/oohscout/track_a_spatial/study_area.py))
-- **F2** — IH-35 highway centerline loader ([track_a_spatial/corridor.py](backend/src/oohscout/track_a_spatial/corridor.py) — generic parameter form, commit `0c406dc`)
-- **F4** — Data provenance sidecars + audit ([data/provenance.py](backend/src/oohscout/data/provenance.py), commit `07f7595` → merge `293a844`)
+- **F1a** — `backend/src/oohscout` installable package + smoke tests
+- **F2** — Highway centerline loader ([track_a_spatial/corridor.py](backend/src/oohscout/track_a_spatial/corridor.py))
+- **F3** — Multi-source ingestion + cache pattern
+- **F4** — Data provenance sidecars + audit ([data/provenance.py](backend/src/oohscout/data/provenance.py))
+- **F5** — DEV_MODE Waco bbox subset ([track_a_spatial/dev_mode.py](backend/src/oohscout/track_a_spatial/dev_mode.py))
+- **F6** — Corridor buffer search zone: `build_corridor_buffer` / `load_or_build_corridor_buffer` in [track_a_spatial/corridor.py](backend/src/oohscout/track_a_spatial/corridor.py) (merge `c5cf891`; McLennan IH-35 at 500 m = 65.37 km²)
+- Full suite: **64 tests passing** (`uv run pytest`).
 
-**In-flight on `feature/f5-test-bbox` (not yet committed):**
-- **F5** — Test-bbox learning chapter scaffolded at [docs/learning/chapters/f5_test_bbox/](docs/learning/chapters/f5_test_bbox/) using the standard 5-file pattern (Milan original → explanation → OOHScout adaptation → explanation → code-along).
-- **New production backend surface** landed under [backend/src/oohscout/](backend/src/oohscout/), matching V2's target layout:
-  - [api/main.py](backend/src/oohscout/api/main.py), [api/auth.py](backend/src/oohscout/api/auth.py) (sidecar token), [api/errors.py](backend/src/oohscout/api/errors.py) (global handler + `sanitize_error`)
-  - [mcp/](backend/src/oohscout/mcp/) — MCP tool server (`add_billboard_candidate`, `read_local_file`, `run_custom_analytics`) + `workspace.py` sandbox (`resolve_path`, `assert_safe_extension`)
-  - [authoring.py](backend/src/oohscout/authoring.py) — `save_candidate`, `save_corridor`, `execute_agent_sql` (single-file per V2 §A1; split only past ~500 lines)
-  - [security.py](backend/src/oohscout/security.py) — `assert_public_url`, `check_sql_safety`, `sanitize_error`
-  - [project.py](backend/src/oohscout/project.py) — Pydantic `Candidate`, `Corridor`, `RegulatoryStatus` enum with `field_validator` blocking "LEGAL" at the schema boundary
-  - [skills/SKILL.md](backend/src/oohscout/skills/SKILL.md) — Claude-Desktop-ready SKILL for the OOHScout agent
-- [docs/PRODUCTION_ARCHITECTURE_V2.md](docs/PRODUCTION_ARCHITECTURE_V2.md) — the GeoLibre-verified architecture reference (authoritative).
-- `pyproject.toml` / `uv.lock` — FastAPI + MCP dependencies added.
+**Scaffolded, not production-verified:** the FastAPI sidecar ([api/](backend/src/oohscout/api/)), [authoring.py](backend/src/oohscout/authoring.py), [security.py](backend/src/oohscout/security.py) (28 SQL-safety tests pass), [project.py](backend/src/oohscout/project.py) (`RegulatoryStatus` blocks "LEGAL"), [skills/SKILL.md](backend/src/oohscout/skills/SKILL.md). The prototype MCP tools were removed on 2026-09-10 — [mcp/server.py](backend/src/oohscout/mcp/server.py) is a placeholder; MCP returns in Phase 3 as read-only Track A tools.
+
+**Next:** F7 candidate sampling (+ F7a: one reference line per direction of travel) → F9 43 TAC Chapter 21 rule table → F8 spacing engine (PASS / FAIL / REVIEW).
 
 **Agent sequencing decision (2026-08-29):** After F7, an experimental Track-A-only Scout shell may expose existing signs, POIs, AADT, and unverified scouting points. It must label all points `REVIEW`, must not integrate Track B, and does not count as F37/F39 completion. The full ReAct agent still integrates Track A + Track B only in Phase 4.
 
