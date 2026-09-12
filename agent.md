@@ -20,8 +20,8 @@ Three-layer authoring stack (V2 §A1):
 
 ## 3. Current Focus (Where Work Is Actually Happening)
 
-* **Track A (Spatial Engine — in progress):** F1 study area, F2 highway centerline, F3 ingestion, F4 provenance sidecars, F5 DEV_MODE bbox and F6 corridor buffer all shipped to `main`. **Next: F7 candidate sampling.** Legal setbacks in the domain are tiered per **43 TAC Chapter 21** (do NOT quote a flat "500 ft" — that figure is the geosign-ai legacy that CLAUDE.md flags as wrong).
+* **Track A (Spatial Engine — in progress):** F1 study area, F2 highway centerline, F3 ingestion, F4 provenance sidecars, F5 DEV_MODE bbox, F6 corridor buffer, and the MVP preliminary screening (F7a reference lines + mileposts, existing signs, F8 sieve, F9 rule table as cited data) are built. Rules live in `backend/src/oohscout/rules/texas.py` with citations (43 TAC §21.179 / §21.180 / §21.200, Waco Code §28-1078); none is verified word-for-word yet, so screening returns only FAIL or REVIEW. Legal setbacks are tiered per **43 TAC Chapter 21** (do NOT quote a flat "500 ft" — that figure is the geosign-ai legacy that CLAUDE.md flags as wrong).
 * **Track B (Regulatory RAG — not started):** Planned for Phase 3. `pgvector` + citation-required retrieval on county zoning PDFs. 0 / 6 features built.
-* **Track C (Agent — not started):** Planned for Phase 4. ReAct loop wrapping Track A + Track B as tools. `backend/src/oohscout/track_c_agent/` currently contains only `__init__.py`.
+* **Track C (Agent — next):** First agent = "Ask OOHScout": read-only tools over the screening engine, native tool calling, max 8 steps, a golden eval graded against engine outputs. The LLM chooses tools and explains; it never measures distances or decides legality. `backend/src/oohscout/track_c_agent/` currently contains only `__init__.py`.
 
 When asked to write code, always adhere to these architectural rules and ensure any new database queries strictly use parameterized bindings.
