@@ -134,7 +134,7 @@ All chapter data files confirmed present in `notebooks/data/new_study/`:
 
 ---
 
-## Session progress (as of 2026-09-11)
+## Session progress (as of 2026-09-12)
 
 **Shipped to `main`** (details per feature: [docs/FEATURES.md](docs/FEATURES.md) and [docs/SESSION_UPDATES.md](docs/SESSION_UPDATES.md)):
 - **F1** — Retargetable study-area loader ([track_a_spatial/study_area.py](backend/src/oohscout/track_a_spatial/study_area.py))
@@ -144,11 +144,12 @@ All chapter data files confirmed present in `notebooks/data/new_study/`:
 - **F4** — Data provenance sidecars + audit ([data/provenance.py](backend/src/oohscout/data/provenance.py))
 - **F5** — DEV_MODE Waco bbox subset ([track_a_spatial/dev_mode.py](backend/src/oohscout/track_a_spatial/dev_mode.py))
 - **F6** — Corridor buffer search zone: `build_corridor_buffer` / `load_or_build_corridor_buffer` in [track_a_spatial/corridor.py](backend/src/oohscout/track_a_spatial/corridor.py) (merge `c5cf891`; McLennan IH-35 at 500 m = 65.37 km²)
-- Full suite: **64 tests passing** (`uv run pytest`).
+- **MVP preliminary screening (2026-09-12, branch `feature/mvp-screening`)** — the 1-km candidate grid was replaced by a sieve: [track_a_spatial/reference.py](backend/src/oohscout/track_a_spatial/reference.py) (F7a reference line per direction + TxDOT milepost scale), [existing_signs.py](backend/src/oohscout/track_a_spatial/existing_signs.py) (TxDOT + certified-city permits on the highway), [screening.py](backend/src/oohscout/track_a_spatial/screening.py) (F8: 10 m probes → blocked / near_limit / city_rules / possible_etj / open → stretches → candidates ≥ 1,500 ft apart), [rules/texas.py](backend/src/oohscout/rules/texas.py) (F9 rules as cited data, `full_text_verified=False` → never PASS), [data/arcgis.py](backend/src/oohscout/data/arcgis.py) (TxDOT open-data fetcher). Runner: `uv run python backend/scripts/run_ih35_screening.py` → 59 REVIEW candidates on IH-35 McLennan.
+- Full suite: **120 tests passing** (`uv run pytest`).
 
 **Scaffolded, not production-verified:** the FastAPI sidecar ([api/](backend/src/oohscout/api/)), [authoring.py](backend/src/oohscout/authoring.py), [security.py](backend/src/oohscout/security.py) (28 SQL-safety tests pass), [project.py](backend/src/oohscout/project.py) (`RegulatoryStatus` blocks "LEGAL"), [skills/SKILL.md](backend/src/oohscout/skills/SKILL.md). The prototype MCP tools were removed on 2026-09-10 — [mcp/server.py](backend/src/oohscout/mcp/server.py) is a placeholder; MCP returns in Phase 3 as read-only Track A tools.
 
-**Next:** F7 candidate sampling (+ F7a: one reference line per direction of travel) → F9 43 TAC Chapter 21 rule table → F8 spacing engine (PASS / FAIL / REVIEW).
+**Next:** Agent #1 "Ask OOHScout" in `track_c_agent/` — read-only tools over the screening engine, native tool calling, a 20-question golden eval (the LLM never measures or decides legality) → any county/highway runner → ordinance-reader workflow (human-approved rules). Open data gaps: Waco ETJ boundary, Waco zoning/overlays, word-for-word verification of the rule table.
 
 **Agent sequencing decision (2026-08-29):** After F7, an experimental Track-A-only Scout shell may expose existing signs, POIs, AADT, and unverified scouting points. It must label all points `REVIEW`, must not integrate Track B, and does not count as F37/F39 completion. The full ReAct agent still integrates Track A + Track B only in Phase 4.
 

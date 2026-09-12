@@ -30,7 +30,7 @@ The first F7 design put a candidate every 1 km. Reading the rules and the data s
 ### Known limits (all flagged REVIEW, never hidden)
 
 - Rule text not yet verified word-for-word; commercial-area (§21.162-163) and public-space (§21.178) checks not automated; parcels/landowners not joined.
-- Ramp distance is straight-line to OSM `motorway_link` geometry — an approximation of §21.179.
+- Ramp distance is straight-line to OSM `motorway_link` geometry — an approximation of §21.179. Ramps are fetched only inside the county-clipped 500 m zone, so a ramp just across the county line is not seen; no McLennan candidate is affected (the 6 rural candidates are ≥ 18,000 ft from the county line), but a retargeted corridor should fetch ramps with a margin like the signs.
 - Waco ETJ boundary unknown (flagged as "possible ETJ" within 5 miles); Waco size-based spacing and zoning not modelled.
 
 ---
