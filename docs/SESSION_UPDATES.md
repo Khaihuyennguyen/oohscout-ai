@@ -6,7 +6,7 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ## 2026-09-12 — MVP preliminary screening built (F7a, F7b, F8, F9 partial)
 
-**Branch:** `feature/mvp-screening` (local; not yet merged or pushed)
+**Branch:** `feature/mvp-screening` — merged to `main` as `a740e2e` and pushed on 2026-09-12
 
 ### Why the plan changed
 
