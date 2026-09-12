@@ -4,6 +4,36 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ---
 
+## 2026-09-11 — F6 Corridor Buffer SHIPPED
+
+**Branch:** `feature/f6-corridor-buffer`
+**Feature shipped:** F6 (the search zone every later feature works inside)
+
+### What was built
+
+- **Production code** in [backend/src/oohscout/track_a_spatial/corridor.py](../backend/src/oohscout/track_a_spatial/corridor.py):
+  - `build_corridor_buffer(lines_metric, study_area_metric, distance_m)` — pure function: union the highway lines → buffer by `distance_m` → clip to the study area. Raises `ValueError` for a non-finite or non-positive distance, a missing CRS, degrees, non-metre units (e.g. Texas State Plane EPSG:2277 is in US survey feet), mismatched CRSs, or an empty zone.
+  - `load_or_build_corridor_buffer(..., cache_dir, *, cache_slug, distance_m=500)` — cache-first wrapper; the file name includes the distance (`<cache_slug>_500m.gpkg`) so a different width never returns a stale zone. `cache_slug` has no default: callers name the corridor.
+  - `CorridorBuffer` frozen dataclass (`distance_m`, `buffer_gdf_metric`, `area_km2`, `cache_path`), exported from `oohscout.track_a_spatial`.
+- **Tests** [backend/tests/track_a/test_corridor_buffer.py](../backend/tests/track_a/test_corridor_buffer.py) — 15 pytests: 499 m inside / 501 m outside, overlapping segments become one polygon, clipping, every rejected input, cache naming + cache hits, and the real McLennan IH-35 zone. Real-data test caches into `tmp_path` so the F4 provenance audit never sees an unsidecarred file.
+- **Real output (local, git-ignored):** `backend/data/processed/mclennan_ih35_buffer_500m.gpkg` + `.source.yaml` (derived from two ODbL datasets → ODbL).
+
+### Evidence
+
+| Gate item | Result |
+|---|---|
+| McLennan IH-35 zone at 500 m | ✅ 65.37 km², one Polygon, no holes, inside the county |
+| Sanity check (≈ 65 km road × 2 × 0.5 km) | ✅ ~65 km² |
+| Buffering segments separately instead (the bug F6 avoids) | 323.2 km² — 5× too large |
+| Tests catch planted bugs (unit check removed, distance dropped from cache name) | ✅ both caught |
+| Pytest total | ✅ **64 passed** (49 before + 15 F6) |
+
+### Next branch
+
+`feature/f7-candidate-sampling` — candidate spots along the corridor, one reference line per direction of travel (F7a).
+
+---
+
 ## 2026-08-30 — F4 Data Provenance Sidecars SHIPPED
 
 **Branch:** `feature/f4-provenance-metadata`
