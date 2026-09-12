@@ -4,6 +4,37 @@ Chronological log of what actually shipped, per session. Append newest at the to
 
 ---
 
+## 2026-09-12 — MVP preliminary screening built (F7a, F7b, F8, F9 partial)
+
+**Branch:** `feature/mvp-screening` (local; not yet merged or pushed)
+
+### Why the plan changed
+
+The first F7 design put a candidate every 1 km. Reading the rules and the data showed that a dot on the road means nothing by itself: 43 TAC Ch. 21 requires 1,500 ft same-side spacing (§21.180), keeps signs 1,000 ft from ramps outside cities (§21.179), requires a commercial/industrial area (§21.162-163), and inside a **certified city** (Waco) the city decides — Waco runs a **cap-and-replace** system (Waco Code §28-1078). Waco's own permits were also missing from the TxDOT permit layer. Candidates are therefore produced by a **sieve**: start with every metre of each side of the road and remove what the rules forbid.
+
+### What was built
+
+- `track_a_spatial/reference.py` — F7a reference lines (one per direction, directed merge), `locate_on_reference` (side, chainage, offset), `build_milepost_scale` (TxDOT reference markers → roadside mileposts).
+- `track_a_spatial/existing_signs.py` — F7b existing signs on the highway (regex over messy highway names, strays dropped, back-to-back permits merged).
+- `track_a_spatial/screening.py` — F8 sieve: probes every 10 m → blocked (FAIL) / near_limit / city_rules / possible_etj / open (all REVIEW) → stretches → candidates ≥ 1,500 ft from signs and from each other.
+- `rules/texas.py` — F9 rule table as data with citations; `full_text_verified=False` everywhere, so nothing is ever PASS.
+- `data/arcgis.py` — TxDOT open-data fetcher (URL guard, 50 MB cap, paging, cache + provenance sidecar).
+- `backend/scripts/run_ih35_screening.py` — the McLennan / IH-35 run: GeoPackage + CSV + interactive map.
+
+### Evidence
+
+- 120 tests pass (64 before + 56 new). 18 planted bugs, each caught by the tests.
+- Real run: 128 existing sign structures (113 TxDOT + 15 Waco). Per side, ~41-43 km blocked (58.7 km by spacing, 25.6 km by ramps, both sides), 10.7 km Waco city rules, ~10-11 km open. **59 candidates** (32 E, 27 W), all REVIEW.
+- Independent check of every candidate against the raw data: nearest same-side sign ≥ 1,551 ft (rule 1,500), nearest ramp for rural candidates ≥ 1,054 ft (rule 1,000), none inside Waco or outside the county. This check found a boundary bug (spots placed on the exact edge of a stretch) that was fixed and covered by a new test.
+
+### Known limits (all flagged REVIEW, never hidden)
+
+- Rule text not yet verified word-for-word; commercial-area (§21.162-163) and public-space (§21.178) checks not automated; parcels/landowners not joined.
+- Ramp distance is straight-line to OSM `motorway_link` geometry — an approximation of §21.179.
+- Waco ETJ boundary unknown (flagged as "possible ETJ" within 5 miles); Waco size-based spacing and zoning not modelled.
+
+---
+
 ## 2026-09-11 — F6 Corridor Buffer SHIPPED
 
 **Branch:** `feature/f6-corridor-buffer`

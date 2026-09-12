@@ -33,6 +33,7 @@ vector = [
     "contextily",
     "geopy",
     "folium",
+    "requests",
     "pandana",
     "libpysal",
     "esda",
