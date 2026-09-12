@@ -20,7 +20,7 @@ Three-layer authoring stack (V2 §A1):
 
 ## 3. Current Focus (Where Work Is Actually Happening)
 
-* **Track A (Spatial Engine — in progress):** F1 study area, F2 highway centerline, F3 ingestion, F4 provenance sidecars all shipped to `main`. **Currently on F5 (DEV_MODE Waco bbox)** on `feature/f5-test-bbox`. Legal setbacks in the domain are tiered per **43 TAC Chapter 21** (do NOT quote a flat "500 ft" — that figure is the geosign-ai legacy that CLAUDE.md flags as wrong).
+* **Track A (Spatial Engine — in progress):** F1 study area, F2 highway centerline, F3 ingestion, F4 provenance sidecars, F5 DEV_MODE bbox and F6 corridor buffer all shipped to `main`. **Next: F7 candidate sampling.** Legal setbacks in the domain are tiered per **43 TAC Chapter 21** (do NOT quote a flat "500 ft" — that figure is the geosign-ai legacy that CLAUDE.md flags as wrong).
 * **Track B (Regulatory RAG — not started):** Planned for Phase 3. `pgvector` + citation-required retrieval on county zoning PDFs. 0 / 6 features built.
 * **Track C (Agent — not started):** Planned for Phase 4. ReAct loop wrapping Track A + Track B as tools. `backend/src/oohscout/track_c_agent/` currently contains only `__init__.py`.
 
